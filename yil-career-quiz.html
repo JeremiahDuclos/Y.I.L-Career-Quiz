@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Y.I.L. Career Discovery Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#C9A84C;--gold-light:#E8C96A;--gold-dark:#8B6914;
+  --black:#0A0A0A;--dark2:#1A1A1A;--dark3:#242424;--white:#F5F0E8;--gray:#888;
+  /* archetype accent colors */
+  --tech:#4F8EF7;--tech-bg:rgba(79,142,247,0.12);
+  --creative:#C84FBF;--creative-bg:rgba(200,79,191,0.12);
+  --health:#2ECC8E;--health-bg:rgba(46,204,142,0.12);
+  --biz:#F7924F;--biz-bg:rgba(247,146,79,0.12);
+  --trades:#F7CF4F;--trades-bg:rgba(247,207,79,0.12);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--black);color:var(--white);font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(201,168,76,0.05) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(201,168,76,0.04) 0%,transparent 50%);pointer-events:none;z-index:0;}
+.container{max-width:780px;margin:0 auto;padding:0 20px;position:relative;z-index:1;}
+.lang-bar{display:flex;justify-content:flex-end;padding:16px 20px 0;max-width:780px;margin:0 auto;position:relative;z-index:2;}
+.lang-toggle{display:flex;background:var(--dark2);border:1px solid rgba(201,168,76,0.2);border-radius:100px;overflow:hidden;}
+.lang-btn{padding:8px 18px;font-size:12px;font-weight:600;letter-spacing:1px;border:none;cursor:pointer;transition:all 0.2s;background:transparent;color:var(--gray);}
+.lang-btn.active{background:var(--gold);color:var(--black);}
+.lang-btn:hover:not(.active){color:var(--white);}
+.header{text-align:center;padding:32px 0 32px;border-bottom:1px solid rgba(201,168,76,0.2);margin-bottom:40px;}
+.header-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.3);border-radius:100px;padding:6px 16px;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:20px;}
+.header-badge::before{content:'★';}.header-badge::after{content:'★';}
+.logo-text{font-family:'Bebas Neue',sans-serif;font-size:clamp(52px,10vw,80px);color:var(--gold);letter-spacing:6px;line-height:1;text-shadow:0 0 60px rgba(201,168,76,0.3);}
+.logo-sub{font-family:'DM Serif Display',serif;font-style:italic;font-size:18px;color:var(--white);opacity:0.7;margin-top:4px;}
+.quiz-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(24px,5vw,38px);letter-spacing:3px;color:var(--white);margin-top:28px;}
+.quiz-subtitle{font-size:14px;color:var(--gray);margin-top:8px;line-height:1.6;}
+.progress-wrap{margin-bottom:36px;display:none;}.progress-wrap.visible{display:block;}
+.progress-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--gray);margin-bottom:10px;letter-spacing:1px;text-transform:uppercase;}
+.progress-meta span:last-child{color:var(--gold);font-weight:600;}
+.progress-bar{height:4px;background:rgba(255,255,255,0.08);border-radius:10px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--gold-dark),var(--gold-light));border-radius:10px;transition:width 0.5s cubic-bezier(0.4,0,0.2,1);box-shadow:0 0 12px rgba(201,168,76,0.5);}
+.screen{display:none;animation:fadeUp 0.4s ease both;}.screen.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.start-card{background:var(--dark2);border:1px solid rgba(201,168,76,0.15);border-radius:20px;padding:48px 40px;text-align:center;margin-bottom:24px;}
+.start-icon{font-size:52px;margin-bottom:20px;display:block;}
+.start-card h2{font-family:'DM Serif Display',serif;font-size:26px;margin-bottom:16px;color:var(--white);}
+.start-card p{font-size:15px;line-height:1.8;color:#999;max-width:480px;margin:0 auto 28px;}
+.tags{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px;}
+.tag{background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.25);color:var(--gold-light);font-size:12px;font-weight:500;padding:6px 14px;border-radius:100px;}
+.btn-primary{display:inline-flex;align-items:center;gap:10px;background:var(--gold);color:var(--black);font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;padding:16px 40px;border-radius:100px;border:none;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 24px rgba(201,168,76,0.3);}
+.btn-primary:hover{background:var(--gold-light);transform:translateY(-2px);}
+.btn-primary:disabled{opacity:0.35;cursor:not-allowed;transform:none;box-shadow:none;}
+.btn-secondary{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--gray);font-size:13px;font-weight:500;padding:12px 24px;border-radius:100px;border:1px solid rgba(255,255,255,0.1);cursor:pointer;transition:all 0.2s;}
+.btn-secondary:hover{border-color:rgba(255,255,255,0.25);color:var(--white);}
+.question-card{background:var(--dark2);border:1px solid rgba(201,168,76,0.12);border-radius:20px;padding:40px;margin-bottom:24px;}
+.q-top-row{display:flex;align-items:center;margin-bottom:16px;}
+.q-number{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:3px;color:var(--gold);}
+.q-text{font-family:'DM Serif Display',serif;font-size:clamp(20px,3vw,26px);line-height:1.4;color:var(--white);margin-bottom:32px;}
+.options{display:grid;gap:12px;}
+.option-row{display:flex;align-items:stretch;gap:8px;}
+.option{flex:1;background:var(--dark3);border:1.5px solid rgba(255,255,255,0.07);border-radius:14px;padding:18px 22px;cursor:pointer;transition:all 0.2s;display:flex;align-items:flex-start;gap:14px;text-align:left;}
+.option:hover{border-color:rgba(201,168,76,0.4);background:rgba(201,168,76,0.06);transform:translateX(2px);}
+.option.selected{border-color:var(--gold);background:rgba(201,168,76,0.1);}
+.option-letter{width:28px;height:28px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--gray);flex-shrink:0;margin-top:1px;transition:all 0.2s;}
+.option.selected .option-letter{background:var(--gold);border-color:var(--gold);color:var(--black);}
+.option-text{font-size:15px;line-height:1.6;color:#ccc;}
+.option.selected .option-text{color:var(--white);}
+.explain-btn{flex-shrink:0;width:26px;min-width:26px;height:26px;align-self:center;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:8px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--gray);line-height:1;}
+.explain-btn:hover{background:rgba(201,168,76,0.15);border-color:rgba(201,168,76,0.3);color:var(--gold);}
+.nav-row{display:flex;justify-content:space-between;align-items:center;gap:16px;}
+.loading-screen{text-align:center;padding:80px 20px;}
+.torch-anim{font-size:64px;animation:flicker 1.2s ease-in-out infinite;display:block;margin:0 auto 32px;}
+@keyframes flicker{0%,100%{transform:scale(1) rotate(-2deg);}50%{transform:scale(1.05) rotate(2deg);filter:brightness(1.3);}}
+.loading-screen h2{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:3px;color:var(--gold);margin-bottom:12px;}
+.loading-screen p{font-size:15px;color:var(--gray);margin-bottom:32px;}
+.loading-dots{display:flex;gap:8px;justify-content:center;}
+.loading-dots span{width:8px;height:8px;background:var(--gold);border-radius:50%;animation:bounce 1.2s ease-in-out infinite;}
+.loading-dots span:nth-child(2){animation-delay:0.2s;}.loading-dots span:nth-child(3){animation-delay:0.4s;}
+@keyframes bounce{0%,100%{transform:translateY(0);opacity:0.4;}50%{transform:translateY(-10px);opacity:1;}}
+
+/* ── COLORFUL RESULTS ── */
+.result-hero{border-radius:24px;padding:40px;margin-bottom:28px;position:relative;overflow:hidden;text-align:center;}
+.result-hero-clouds{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.cloud{position:absolute;border-radius:50%;filter:blur(60px);opacity:0.18;}
+.result-character{font-size:120px;display:block;margin:0 auto 20px;animation:charFloat 3s ease-in-out infinite;line-height:1;}
+@keyframes charFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+.result-archetype-badge{display:inline-flex;align-items:center;gap:8px;border-radius:100px;padding:8px 20px;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:16px;}
+.result-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(38px,7vw,60px);letter-spacing:4px;color:var(--white);line-height:1;margin-bottom:14px;}
+.result-tagline{font-family:'DM Serif Display',serif;font-style:italic;font-size:20px;margin-bottom:20px;}
+.result-desc{font-size:15px;line-height:1.9;color:rgba(255,255,255,0.75);max-width:540px;margin:0 auto;}
+
+.section-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;color:var(--white);margin-bottom:16px;display:flex;align-items:center;gap:12px;}
+.section-title::after{content:'';flex:1;height:1px;background:rgba(255,255,255,0.1);}
+
+/* colorful career cards */
+.careers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:12px;margin-bottom:28px;}
+.career-card{border-radius:16px;padding:22px;transition:all 0.2s;cursor:pointer;border:1.5px solid transparent;position:relative;overflow:hidden;}
+.career-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,0.4);}
+.career-card-shine{position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent);}
+.career-icon{font-size:32px;margin-bottom:12px;display:block;}
+.career-name{font-weight:700;font-size:14px;color:var(--white);margin-bottom:4px;}
+.career-salary{font-size:12px;opacity:0.8;margin-bottom:8px;}
+.career-tap-hint{font-size:10px;letter-spacing:1px;opacity:0.6;}
+
+/* colorful school cards */
+.schools-list{display:grid;gap:14px;margin-bottom:28px;}
+.school-card{border-radius:16px;overflow:hidden;border:1.5px solid rgba(255,255,255,0.08);transition:all 0.2s;cursor:pointer;background:var(--dark2);}
+.school-card:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(0,0,0,0.5);border-color:rgba(255,255,255,0.18);}
+.school-photo{width:100%;height:130px;object-fit:cover;display:none;}
+.school-photo-placeholder{width:100%;height:6px;}
+.school-card-body{padding:16px 20px;display:flex;align-items:flex-start;gap:14px;}
+.school-card-right{flex:1;}
+.school-type-badge{padding:4px 10px;border-radius:100px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;white-space:nowrap;flex-shrink:0;margin-top:2px;}
+.badge-uni{background:rgba(100,150,255,0.15);color:#6699ff;border:1px solid rgba(100,150,255,0.3);}
+.badge-hbcu{background:rgba(180,100,255,0.15);color:#c080ff;border:1px solid rgba(180,100,255,0.3);}
+.badge-cc{background:rgba(201,168,76,0.15);color:var(--gold);border:1px solid rgba(201,168,76,0.3);}
+.badge-trade{background:rgba(100,200,120,0.15);color:#64c878;border:1px solid rgba(100,200,120,0.3);}
+.badge-online{background:rgba(200,100,200,0.15);color:#d464d4;border:1px solid rgba(200,100,200,0.3);}
+.school-name{font-weight:700;font-size:15px;color:var(--white);margin-bottom:4px;}
+.school-detail{font-size:12px;color:#888;line-height:1.6;}
+.school-tap-hint{font-size:10px;letter-spacing:1px;margin-top:6px;}
+
+/* next steps colorful */
+.next-steps{border-radius:20px;padding:28px 32px;margin-bottom:24px;}
+.step-list{list-style:none;display:grid;gap:16px;}
+.step-item{display:flex;gap:16px;align-items:flex-start;font-size:15px;color:rgba(255,255,255,0.8);line-height:1.7;}
+.step-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;margin-top:2px;}
+
+.community-section{background:var(--dark2);border:1px solid rgba(201,168,76,0.15);border-radius:20px;padding:32px;margin-bottom:24px;}
+.community-section p{font-size:15px;color:#bbb;line-height:1.8;margin-bottom:0;}
+.community-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;margin-top:20px;}
+.community-card{background:var(--dark3);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:20px 16px;text-align:center;}
+.community-card .c-icon{font-size:32px;margin-bottom:10px;display:block;}
+.community-card .c-title{font-weight:600;font-size:14px;color:var(--white);margin-bottom:6px;}
+.community-card .c-desc{font-size:12px;color:#888;line-height:1.6;}
+
+.cta-bar{background:var(--gold);border-radius:20px;padding:32px;margin-bottom:20px;text-align:center;}
+.cta-bar h3{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;color:var(--black);margin-bottom:8px;}
+.cta-bar p{font-size:14px;color:rgba(0,0,0,0.65);margin-bottom:20px;line-height:1.6;}
+.cta-buttons{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.btn-dark{background:var(--black);color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;padding:14px 28px;border-radius:100px;border:none;cursor:pointer;white-space:nowrap;transition:all 0.2s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;}
+.btn-dark:hover{background:var(--dark2);}
+.btn-outline-dark{background:transparent;color:var(--black);font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;padding:14px 28px;border-radius:100px;border:2px solid rgba(0,0,0,0.3);cursor:pointer;white-space:nowrap;transition:all 0.2s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;}
+.btn-outline-dark:hover{background:rgba(0,0,0,0.1);}
+.restart-btn{background:transparent;border:1px solid rgba(255,255,255,0.1);color:var(--gray);font-size:13px;padding:10px 20px;border-radius:100px;cursor:pointer;transition:all 0.2s;display:block;margin:0 auto 48px;}
+.restart-btn:hover{border-color:rgba(255,255,255,0.25);color:var(--white);}
+
+/* POPUP MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:100;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--dark2);border:1px solid rgba(201,168,76,0.2);border-radius:24px;max-width:480px;width:100%;padding:36px;position:relative;animation:fadeUp 0.3s ease both;max-height:88vh;overflow-y:auto;}
+.modal-close{position:absolute;top:14px;right:14px;background:rgba(255,255,255,0.07);border:none;color:var(--gray);font-size:18px;width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+.modal-close:hover{background:rgba(255,255,255,0.15);color:var(--white);}
+.modal-emoji{font-size:44px;text-align:center;display:block;margin-bottom:16px;}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;color:var(--white);margin-bottom:8px;}
+.modal-subtitle{font-size:13px;color:var(--gold);font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:16px;}
+.modal-body{font-size:15px;color:#bbb;line-height:1.9;}
+.modal-tag{display:inline-block;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.25);color:var(--gold-light);font-size:12px;padding:4px 12px;border-radius:100px;margin:4px 4px 0 0;}
+.modal-divider{height:1px;background:rgba(255,255,255,0.07);margin:20px 0;}
+.modal-section-label{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;color:var(--gold);margin-bottom:8px;}
+.modal-logo{font-family:'Bebas Neue',sans-serif;font-size:48px;color:var(--gold);letter-spacing:5px;text-align:center;margin-bottom:4px;}
+.modal-tagline-text{font-family:'DM Serif Display',serif;font-style:italic;text-align:center;color:#aaa;font-size:15px;margin-bottom:28px;}
+.modal-section{margin-bottom:24px;}
+.modal-section h4{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--gold);margin-bottom:10px;}
+.modal-section p{font-size:14px;color:#bbb;line-height:1.8;}
+.modal-pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+.modal-pill{background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);color:var(--gold-light);font-size:12px;padding:5px 12px;border-radius:100px;}
+.modal-ig-btn{display:flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;padding:16px;border-radius:14px;text-decoration:none;margin-top:8px;transition:all 0.2s;}
+.modal-ig-btn:hover{opacity:0.9;transform:translateY(-2px);}
+.modal-location{display:flex;align-items:flex-start;gap:12px;background:rgba(255,255,255,0.04);border-radius:12px;padding:14px 16px;margin-top:10px;}
+.modal-location span{font-size:22px;}
+.modal-location div{font-size:13px;color:#bbb;line-height:1.7;}
+.modal-location strong{color:var(--white);font-size:14px;}
+
+@media(max-width:600px){
+  .question-card,.start-card{padding:28px 20px;}
+  .result-hero{padding:28px 20px;}
+  .next-steps,.community-section{padding:24px 20px;}
+  .cta-bar{padding:24px 20px;}
+  .nav-row{flex-direction:column-reverse;}
+  .btn-primary{width:100%;justify-content:center;}
+  .btn-secondary{width:100%;justify-content:center;}
+  .result-character{font-size:90px;}
+}
+</style>
+</head>
+<body>
+
+<!-- POPUP MODAL -->
+<div class="modal-overlay" id="popupOverlay" onclick="closePopupOutside(event)">
+  <div class="modal" id="popupModal">
+    <button class="modal-close" onclick="closePopup()">&#10005;</button>
+    <div id="popupContent"></div>
+  </div>
+</div>
+
+<!-- Y.I.L. INFO MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal" id="infoModal">
+    <button class="modal-close" onclick="closeModal()">&#10005;</button>
+    <div class="modal-logo">Y.I.L.</div>
+    <div class="modal-tagline-text" id="modalTagline">Lead With Impact.</div>
+    <div class="modal-section"><h4 id="mh1">What is Y.I.L.?</h4><p id="mp1">Young Impact Leaders is a club built for middle and high school students. We help you figure out what you want to do with your life before the pressure hits.</p></div>
+    <div class="modal-section"><h4 id="mh2">What We Do</h4><div class="modal-pills">
+      <span class="modal-pill">&#127775; <span class="mp-mentor">Mentorship</span></span>
+      <span class="modal-pill">&#127919; <span class="mp-career">Career Guidance</span></span>
+      <span class="modal-pill">&#128200; <span class="mp-entre">Entrepreneurship</span></span>
+      <span class="modal-pill">&#127758; <span class="mp-comm">Community Service</span></span>
+      <span class="modal-pill">&#127754; <span class="mp-beach">Beach Cleanups</span></span>
+      <span class="modal-pill">&#129369; <span class="mp-food">Feeding the Homeless</span></span>
+      <span class="modal-pill">&#128187; <span class="mp-web">Website Building Help</span></span>
+      <span class="modal-pill">&#129309; <span class="mp-net">Entrepreneur Network</span></span>
+    </div></div>
+    <div class="modal-section"><h4 id="mh3">Young Entrepreneurs</h4><p id="mp3">Do you have a business idea? Y.I.L. connects young entrepreneurs with each other and with people who can help you build your website and grow your brand.</p></div>
+    <div class="modal-section"><h4 id="mh4">Where We Meet</h4>
+      <div class="modal-location"><span>&#128205;</span><div><strong>Broward College — Central Campus</strong><br>Davie, Florida<br><span id="mLocation">Building &amp; time: To be announced</span></div></div>
+    </div>
+    <div class="modal-section"><h4 id="mh5">Ready to Join?</h4><p id="mp5">Send us a DM on Instagram and we'll get you connected.</p>
+      <a class="modal-ig-btn" href="https://www.instagram.com/y.i.l_club" target="_blank">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        @y.i.l_club
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="lang-bar">
+  <div class="lang-toggle">
+    <button class="lang-btn active" id="btnEN" onclick="setLang('en')">&#127482;&#127480; English</button>
+    <button class="lang-btn" id="btnES" onclick="setLang('es')">&#127466;&#127480; Español</button>
+  </div>
+</div>
+
+<div class="container">
+  <div class="header">
+    <div class="header-badge" id="hBadge">Young Impact Leaders</div>
+    <div class="logo-text">Y.I.L.</div>
+    <div class="logo-sub" id="hSub">Lead With Impact.</div>
+    <div class="quiz-title" id="hTitle">Career Discovery Assessment</div>
+    <div class="quiz-subtitle" id="hSubtitle">12 questions &middot; Takes about 3 minutes</div>
+  </div>
+  <div class="progress-wrap" id="progressWrap">
+    <div class="progress-meta"><span id="progressLabel">Question 1 of 12</span><span id="progressPct">0%</span></div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  </div>
+
+  <div class="screen active" id="startScreen">
+    <div class="start-card">
+      <span class="start-icon">&#128293;</span>
+      <h2 id="startH2">Find Out What You're Built For</h2>
+      <p id="startP">Answer 12 simple questions and we'll match you to a career path and Florida schools that fit who you are. No right or wrong answers — just be honest!</p>
+      <div class="tags" id="startTags"><span class="tag">Technology</span><span class="tag">Healthcare</span><span class="tag">Business</span><span class="tag">Trades</span><span class="tag">Creative Arts</span><span class="tag">Law &amp; Justice</span><span class="tag">Education</span><span class="tag">Science</span></div>
+      <button class="btn-primary" onclick="startQuiz()" id="startBtn">Let's Go ›</button>
+    </div>
+  </div>
+
+  <div class="screen" id="quizScreen">
+    <div class="question-card">
+      <div class="q-top-row"><div class="q-number" id="qNumber">QUESTION 1 OF 12</div></div>
+      <div class="q-text" id="qText"></div>
+      <div class="options" id="optionsContainer"></div>
+    </div>
+    <div class="nav-row">
+      <button class="btn-secondary" id="backBtn" onclick="goBack()" style="display:none">&#8592; <span id="backTxt">Back</span></button>
+      <button class="btn-primary" id="nextBtn" onclick="goNext()" disabled><span id="nextTxt">Next</span> &#8594;</button>
+    </div>
+  </div>
+
+  <div class="screen" id="loadingScreen">
+    <div class="loading-screen">
+      <span class="torch-anim">&#128294;</span>
+      <h2 id="loadH2">Finding Your Match...</h2>
+      <p id="loadP">Hold tight — figuring out your best career path!</p>
+      <div class="loading-dots"><span></span><span></span><span></span></div>
+    </div>
+  </div>
+
+  <div class="screen" id="resultsScreen"><div id="resultsContent"></div></div>
+</div>
+
+<script>
+var lang='en';
+
+/* ── UI STRINGS ── */
+var T={
+en:{badge:'Young Impact Leaders',logoSub:'Lead With Impact.',hTitle:'Career Discovery Assessment',hSubtitle:'12 questions · Takes about 3 minutes',startH2:"Find Out What You're Built For",startP:"Answer 12 simple questions and we'll match you to a career path and Florida schools that fit who you are. No right or wrong answers — just be honest!",startTags:['Technology','Healthcare','Business','Trades','Creative Arts','Law & Justice','Education','Science'],startBtn:"Let's Go ›",qOf:'QUESTION {n} OF 12',qOfProg:'Question {n} of 12',back:'Back',next:'Next',seeResults:'See My Results',loadH2:'Finding Your Match...',loadP:'Hold tight — figuring out your best career path!',resultLabel:'You Are',secCareers:'Tap a Career to Learn More',secSchools:'Tap a School to Learn More',secSteps:'3 Simple Things You Can Do This Week',secComm:'More Than Just Careers',commIntro:"At Y.I.L. we believe leaders don't just build careers — they build communities.",commCards:[{icon:'🏖️',title:'Beach Cleanups',desc:'We clean up our beaches and neighborhoods together as a team.'},{icon:'🍽️',title:'Feeding the Homeless',desc:'We provide meals for those who need it most in our community.'},{icon:'💻',title:'Website Help',desc:'Young entrepreneurs get real help building their website and brand.'},{icon:'🤝',title:'Entrepreneur Network',desc:'Connect with other young business owners building something great.'}],ctaH3:'Ready to Join Y.I.L.?',ctaP:'Meetings at Broward College — Central Campus, Davie, FL<br>Building & time coming soon. DM us on Instagram!',igBtn:'Follow @y.i.l_club',learnMore:'Learn More About Y.I.L.',retake:'↺ Retake the Assessment',tapCareer:'Tap to learn what this job is',tapSchool:'Tap for programs & details',hbcuNote:'★ HBCU',modalTagline:'Lead With Impact.',mh1:'What is Y.I.L.?',mp1:"Young Impact Leaders is a club built for middle and high school students. We help you figure out what you want to do with your life before the pressure hits.",mh2:'What We Do',mpMentor:'Mentorship',mpCareer:'Career Guidance',mpEntre:'Entrepreneurship',mpComm:'Community Service',mpBeach:'Beach Cleanups',mpFood:'Feeding the Homeless',mpWeb:'Website Building Help',mpNet:'Entrepreneur Network',mh3:'Young Entrepreneurs',mp3:"Do you have a business idea? Y.I.L. connects young entrepreneurs with people who can help you build your website and grow your brand.",mh4:'Where We Meet',mLocation:'Building & time: To be announced',mh5:'Ready to Join?',mp5:"Send us a DM on Instagram and we'll get you connected."},
+es:{badge:'Jóvenes Líderes de Impacto',logoSub:'Lidera con Impacto.',hTitle:'Evaluación de Descubrimiento de Carrera',hSubtitle:'12 preguntas · Toma unos 3 minutos',startH2:'¡Descubre Para Qué Naciste!',startP:'Responde 12 preguntas sencillas y te mostraremos qué carreras y escuelas en Florida se adaptan a ti. ¡No hay respuestas incorrectas!',startTags:['Tecnología','Salud','Negocios','Oficios','Artes Creativas','Justicia','Educación','Ciencias'],startBtn:'¡Vamos! ›',qOf:'PREGUNTA {n} DE 12',qOfProg:'Pregunta {n} de 12',back:'Atrás',next:'Siguiente',seeResults:'Ver Mis Resultados',loadH2:'Buscando tu resultado...',loadP:'¡Espera — estamos encontrando tu mejor camino!',resultLabel:'Tú Eres',secCareers:'Toca una Carrera para Aprender Más',secSchools:'Toca una Escuela para Ver Detalles',secSteps:'3 Cosas Sencillas Que Puedes Hacer Esta Semana',secComm:'Más Que Solo Carreras',commIntro:'En Y.I.L. creemos que los líderes construyen comunidades, no solo carreras.',commCards:[{icon:'🏖️',title:'Limpieza de Playas',desc:'Salimos juntos a limpiar nuestras playas y vecindarios.'},{icon:'🍽️',title:'Alimentar a los Sin Hogar',desc:'Proporcionamos comidas a quienes más lo necesitan en nuestra comunidad.'},{icon:'💻',title:'Ayuda con Sitios Web',desc:'Los jóvenes emprendedores reciben ayuda para crear su página web.'},{icon:'🤝',title:'Red de Emprendedores',desc:'Conéctate con otros jóvenes empresarios que construyen algo grande.'}],ctaH3:'¿Listo para Unirte a Y.I.L.?',ctaP:'Reuniones en Broward College — Campus Central, Davie, FL<br>Edificio y hora próximamente. ¡Escríbenos por Instagram!',igBtn:'Seguir @y.i.l_club',learnMore:'Más Información sobre Y.I.L.',retake:'↺ Volver a Hacer la Evaluación',tapCareer:'Toca para aprender qué hace este trabajo',tapSchool:'Toca para ver programas y detalles',hbcuNote:'★ HBCU',modalTagline:'Lidera con Impacto.',mh1:'¿Qué es Y.I.L.?',mp1:"Young Impact Leaders es un club para estudiantes de secundaria. Te ayudamos a descubrir qué quieres hacer con tu vida antes de que llegue la presión.",mh2:'Qué Hacemos',mpMentor:'Mentoría',mpCareer:'Orientación Profesional',mpEntre:'Emprendimiento',mpComm:'Servicio Comunitario',mpBeach:'Limpieza de Playas',mpFood:'Alimentar a los Sin Hogar',mpWeb:'Ayuda con Sitios Web',mpNet:'Red de Emprendedores',mh3:'Jóvenes Emprendedores',mp3:"¿Tienes una idea de negocio? Y.I.L. conecta a jóvenes emprendedores con personas que pueden ayudarte a crecer.",mh4:'Dónde Nos Reunimos',mLocation:'Edificio y hora: Por anunciar',mh5:'¿Listo para Unirte?',mp5:"Envíanos un mensaje en Instagram y te conectamos."}
+};
+
+/* ── ARCHETYPE THEMES (color, clouds, character SVG) ── */
+var themes={
+  T:{
+    accent:'#4F8EF7',bg:'rgba(79,142,247,0.13)',
+    clouds:['rgba(79,142,247,0.5)','rgba(100,180,255,0.4)','rgba(30,80,200,0.4)'],
+    /* Cartoon: kid with laptop / tech gear */
+    character:'<svg viewBox="0 0 120 140" width="120" height="140" xmlns="http://www.w3.org/2000/svg"><!-- body --><rect x="35" y="75" width="50" height="45" rx="10" fill="#4F8EF7"/><rect x="45" y="120" width="12" height="16" rx="4" fill="#3a6fd4"/><rect x="63" y="120" width="12" height="16" rx="4" fill="#3a6fd4"/><!-- head --><circle cx="60" cy="50" r="24" fill="#FFDBB5"/><!-- hair --><ellipse cx="60" cy="28" rx="22" ry="10" fill="#2d1a00"/><rect x="38" y="28" width="44" height="10" rx="5" fill="#2d1a00"/><!-- eyes --><circle cx="52" cy="48" r="3.5" fill="#1a1a2e"/><circle cx="68" cy="48" r="3.5" fill="#1a1a2e"/><circle cx="53.5" cy="47" r="1" fill="white"/><circle cx="69.5" cy="47" r="1" fill="white"/><!-- smile --><path d="M53 57 Q60 63 67 57" stroke="#c8816a" stroke-width="2" fill="none" stroke-linecap="round"/><!-- laptop --><rect x="28" y="90" width="44" height="28" rx="4" fill="#1a1a2e"/><rect x="31" y="93" width="38" height="22" rx="2" fill="#0d2137"/><rect x="34" y="95" width="32" height="18" rx="1" fill="#0a3a5c"/><!-- screen glow lines --><rect x="36" y="97" width="20" height="2" rx="1" fill="#4F8EF7" opacity="0.8"/><rect x="36" y="101" width="14" height="2" rx="1" fill="#4F8EF7" opacity="0.5"/><rect x="36" y="105" width="18" height="2" rx="1" fill="#4F8EF7" opacity="0.6"/><!-- headphones --><path d="M36 45 Q36 22 60 22 Q84 22 84 45" stroke="#2d1a00" stroke-width="4" fill="none"/><rect x="31" y="43" width="9" height="14" rx="4" fill="#2d1a00"/><rect x="80" y="43" width="9" height="14" rx="4" fill="#2d1a00"/><!-- stars --><text x="92" y="35" font-size="14" fill="#FFD700">⚡</text><text x="8" y="55" font-size="12" fill="#4F8EF7">{ }</text></svg>'
+  },
+  C:{
+    accent:'#C84FBF',bg:'rgba(200,79,191,0.13)',
+    clouds:['rgba(200,79,191,0.5)','rgba(255,120,220,0.4)','rgba(140,40,180,0.4)'],
+    /* Cartoon: artist/creator with palette */
+    character:'<svg viewBox="0 0 120 140" width="120" height="140" xmlns="http://www.w3.org/2000/svg"><!-- body --><rect x="35" y="75" width="50" height="45" rx="10" fill="#C84FBF"/><!-- beret --><ellipse cx="60" cy="28" rx="26" ry="12" fill="#8B2FC9"/><circle cx="72" cy="24" r="5" fill="#ff6bcb"/><!-- head --><circle cx="60" cy="52" r="24" fill="#FFDBB5"/><!-- hair --><ellipse cx="60" cy="52" rx="24" ry="24" fill="#8B4513" clip-path="url(#hairclip)"/><clipPath id="hairclip"><rect x="36" y="28" width="48" height="20"/></clipPath><!-- eyes --><circle cx="52" cy="50" r="3.5" fill="#1a1a2e"/><circle cx="68" cy="50" r="3.5" fill="#1a1a2e"/><circle cx="53.5" cy="49" r="1" fill="white"/><circle cx="69.5" cy="49" r="1" fill="white"/><!-- blush --><ellipse cx="46" cy="57" rx="5" ry="3" fill="#ffb3c6" opacity="0.6"/><ellipse cx="74" cy="57" rx="5" ry="3" fill="#ffb3c6" opacity="0.6"/><!-- smile --><path d="M53 60 Q60 66 67 60" stroke="#c8816a" stroke-width="2" fill="none" stroke-linecap="round"/><!-- palette --><ellipse cx="88" cy="95" rx="18" ry="14" fill="#f5e6d3"/><circle cx="80" cy="89" r="4" fill="#ff6b6b"/><circle cx="88" cy="86" r="4" fill="#ffd93d"/><circle cx="96" cy="89" r="4" fill="#6bcb77"/><circle cx="98" cy="97" r="4" fill="#4d96ff"/><circle cx="84" cy="102" r="4" fill="#C84FBF"/><!-- hole in palette --><circle cx="89" cy="97" r="5" fill="#f5e6d3"/><!-- paintbrush --><rect x="70" y="78" width="4" height="24" rx="2" fill="#8B4513" transform="rotate(-30 72 90)"/><ellipse cx="62" cy="74" rx="4" ry="6" fill="#ff6b6b" transform="rotate(-30 62 74)"/><!-- arm --><rect x="62" y="90" width="10" height="28" rx="5" fill="#FFDBB5"/><!-- stars --><text x="8" y="40" font-size="14" fill="#C84FBF">✦</text><text x="100" y="115" font-size="12" fill="#ffd93d">★</text></svg>'
+  },
+  H:{
+    accent:'#2ECC8E',bg:'rgba(46,204,142,0.13)',
+    clouds:['rgba(46,204,142,0.5)','rgba(100,220,180,0.4)','rgba(20,150,100,0.4)'],
+    /* Cartoon: nurse/helper with stethoscope */
+    character:'<svg viewBox="0 0 120 140" width="120" height="140" xmlns="http://www.w3.org/2000/svg"><!-- body --><rect x="35" y="75" width="50" height="45" rx="10" fill="white"/><rect x="45" y="75" width="30" height="45" rx="0" fill="#e8f8f2"/><!-- scrubs cross symbol --><rect x="55" y="80" width="10" height="25" rx="2" fill="#2ECC8E"/><rect x="48" y="88" width="24" height="9" rx="2" fill="#2ECC8E"/><!-- legs --><rect x="40" y="120" width="14" height="16" rx="4" fill="#b0d4c8"/><rect x="66" y="120" width="14" height="16" rx="4" fill="#b0d4c8"/><!-- head --><circle cx="60" cy="50" r="24" fill="#FFDBB5"/><!-- nurse cap --><rect x="42" y="28" width="36" height="12" rx="4" fill="white"/><rect x="54" y="30" width="12" height="8" rx="1" fill="#2ECC8E"/><!-- hair --><ellipse cx="60" cy="28" rx="22" ry="10" fill="#3d2000"/><rect x="38" y="28" width="44" height="6" rx="3" fill="#3d2000"/><!-- eyes --><circle cx="52" cy="50" r="3.5" fill="#1a1a2e"/><circle cx="68" cy="50" r="3.5" fill="#1a1a2e"/><circle cx="53.5" cy="49" r="1" fill="white"/><circle cx="69.5" cy="49" r="1" fill="white"/><!-- smile --><path d="M53 59 Q60 65 67 59" stroke="#c8816a" stroke-width="2" fill="none" stroke-linecap="round"/><!-- stethoscope --><path d="M75 65 Q88 65 88 80 Q88 92 80 92 Q72 92 72 84" stroke="#2ECC8E" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="72" cy="86" r="6" fill="#2ECC8E"/><!-- heart --><text x="8" y="50" font-size="16" fill="#2ECC8E">❤️</text><text x="96" y="40" font-size="12" fill="#2ECC8E">✚</text></svg>'
+  },
+  B:{
+    accent:'#F7924F',bg:'rgba(247,146,79,0.13)',
+    clouds:['rgba(247,146,79,0.5)','rgba(255,180,100,0.4)','rgba(200,90,30,0.4)'],
+    /* Cartoon: young businessman in suit */
+    character:'<svg viewBox="0 0 120 140" width="120" height="140" xmlns="http://www.w3.org/2000/svg"><!-- suit body --><rect x="33" y="74" width="54" height="48" rx="10" fill="#2d3748"/><!-- shirt --><polygon points="52,74 60,90 68,74" fill="white"/><!-- tie --><polygon points="58,78 62,78 61,100 59,100" fill="#F7924F"/><!-- suit lapels --><polygon points="33,74 52,74 44,95 33,85" fill="#1a202c"/><polygon points="87,74 68,74 76,95 87,85" fill="#1a202c"/><!-- legs --><rect x="40" y="122" width="14" height="14" rx="3" fill="#2d3748"/><rect x="66" y="122" width="14" height="14" rx="3" fill="#2d3748"/><!-- shoes --><ellipse cx="47" cy="136" rx="10" ry="4" fill="#1a1a2e"/><ellipse cx="73" cy="136" rx="10" ry="4" fill="#1a1a2e"/><!-- head --><circle cx="60" cy="50" r="24" fill="#FFDBB5"/><!-- hair --><ellipse cx="60" cy="29" rx="21" ry="9" fill="#1a0a00"/><rect x="39" y="29" width="42" height="8" rx="4" fill="#1a0a00"/><!-- eyes --><circle cx="52" cy="49" r="3.5" fill="#1a1a2e"/><circle cx="68" cy="49" r="3.5" fill="#1a1a2e"/><circle cx="53.5" cy="48" r="1" fill="white"/><circle cx="69.5" cy="48" r="1" fill="white"/><!-- confident smile --><path d="M52 59 Q60 66 68 59" stroke="#c8816a" stroke-width="2.5" fill="none" stroke-linecap="round"/><!-- briefcase --><rect x="76" y="88" width="26" height="20" rx="4" fill="#8B6914"/><rect x="84" y="84" width="10" height="6" rx="2" fill="#8B6914"/><rect x="76" y="97" width="26" height="2" fill="#c9a84c"/><!-- money sign --><text x="4" y="45" font-size="16" fill="#F7924F">💰</text><text x="98" y="115" font-size="12" fill="#F7924F">📈</text></svg>'
+  },
+  S:{
+    accent:'#F7CF4F',bg:'rgba(247,207,79,0.13)',
+    clouds:['rgba(247,207,79,0.5)','rgba(255,220,100,0.4)','rgba(180,130,20,0.4)'],
+    /* Cartoon: builder with hard hat and tools */
+    character:'<svg viewBox="0 0 120 140" width="120" height="140" xmlns="http://www.w3.org/2000/svg"><!-- body --><rect x="33" y="74" width="54" height="48" rx="10" fill="#f97316"/><!-- overalls bib --><rect x="46" y="74" width="28" height="30" rx="4" fill="#1d4ed8"/><!-- straps --><rect x="46" y="74" width="6" height="48" rx="3" fill="#1d4ed8"/><rect x="68" y="74" width="6" height="48" rx="3" fill="#1d4ed8"/><!-- pocket --><rect x="52" y="82" width="16" height="12" rx="3" fill="#1e40af"/><!-- legs --><rect x="40" y="122" width="14" height="14" rx="3" fill="#1d4ed8"/><rect x="66" y="122" width="14" height="14" rx="3" fill="#1d4ed8"/><!-- boots --><ellipse cx="47" cy="136" rx="11" ry="4" fill="#3d1a00"/><ellipse cx="73" cy="136" rx="11" ry="4" fill="#3d1a00"/><!-- head --><circle cx="60" cy="52" r="23" fill="#FFDBB5"/><!-- hard hat --><ellipse cx="60" cy="33" rx="26" ry="10" fill="#F7CF4F"/><rect x="34" y="36" width="52" height="8" rx="2" fill="#F7CF4F"/><rect x="38" y="34" width="44" height="6" rx="1" fill="#e5b800"/><!-- eyes --><circle cx="52" cy="52" r="3.5" fill="#1a1a2e"/><circle cx="68" cy="52" r="3.5" fill="#1a1a2e"/><circle cx="53.5" cy="51" r="1" fill="white"/><circle cx="69.5" cy="51" r="1" fill="white"/><!-- smile --><path d="M53 61 Q60 68 67 61" stroke="#c8816a" stroke-width="2" fill="none" stroke-linecap="round"/><!-- wrench --><rect x="80" y="82" width="6" height="30" rx="3" fill="#9ca3af" transform="rotate(15 83 97)"/><ellipse cx="85" cy="81" rx="7" ry="5" fill="#9ca3af" transform="rotate(15 85 81)"/><!-- sparks --><text x="5" y="45" font-size="14" fill="#F7CF4F">⚡</text><text x="96" y="42" font-size="14" fill="#F7CF4F">🔧</text></svg>'
+  }
+};
+
+/* ── 12 QUESTIONS ── */
+var questions=[
+  {
+    en:"What do you enjoy doing most in your free time?",
+    es:"¿Qué disfrutas hacer más en tu tiempo libre?",
+    options:[
+      {en:"Building or fixing things with my hands",es:"Construir o arreglar cosas con mis manos",scores:{S:3,T:1},
+       explainEN:"This means you like hands-on activities — like fixing a bike, building furniture, or taking apart electronics to see how they work.",
+       explainES:"Esto significa que te gustan las actividades prácticas — como arreglar una bicicleta, construir muebles o desarmar aparatos."},
+      {en:"Drawing, writing, making music, or being creative",es:"Dibujar, escribir, hacer música o ser creativo",scores:{C:3,B:1},
+       explainEN:"This means you love expressing yourself — through art, stories, music, or design. You see the world differently and want to show it.",
+       explainES:"Esto significa que amas expresarte — a través del arte, historias, música o diseño."},
+      {en:"Helping others or volunteering",es:"Ayudar a otros o hacer voluntariado",scores:{H:3,B:1},
+       explainEN:"This means you naturally want to support people — checking on friends, helping neighbors, or giving your time to your community.",
+       explainES:"Esto significa que naturalmente quieres apoyar a las personas — revisar cómo están tus amigos o ayudar a tu comunidad."},
+      {en:"Researching, gaming, or learning new things on a device",es:"Investigar, jugar videojuegos o aprender cosas nuevas en un dispositivo",scores:{T:2,B:2},
+       explainEN:"This means you enjoy technology and finding information — looking things up, exploring apps, or going deep on topics you're curious about.",
+       explainES:"Esto significa que disfrutas la tecnología y buscar información — explorar apps o profundizar en temas que te interesan."}
+    ]
+  },
+  {
+    en:"Which school subject do you actually enjoy the most?",
+    es:"¿Cuál materia escolar disfrutas más de verdad?",
+    options:[
+      {en:"Math or Science",es:"Matemáticas o Ciencias",scores:{T:3,S:1},
+       explainEN:"People who love math and science are logical thinkers — they enjoy solving problems, doing experiments, and understanding how things work.",
+       explainES:"Las personas que aman las matemáticas y ciencias son pensadores lógicos — disfrutan resolver problemas y entender cómo funcionan las cosas."},
+      {en:"Art, Music, or English / Writing",es:"Arte, Música o Literatura / Escritura",scores:{C:3,H:1},
+       explainEN:"People who love these subjects are creative and expressive — they connect deeply with stories, sounds, colors, and ideas.",
+       explainES:"Las personas que aman estas materias son creativas y expresivas — conectan profundamente con historias, sonidos y colores."},
+      {en:"History, Social Studies, or Health",es:"Historia, Estudios Sociales o Salud",scores:{H:2,B:2},
+       explainEN:"People who enjoy these subjects care about people, society, and how communities work together to solve problems.",
+       explainES:"Las personas que disfrutan estas materias se preocupan por la gente y cómo las comunidades trabajan juntas para resolver problemas."},
+      {en:"Computer Science or Technology class",es:"Ciencias de la Computación o clase de Tecnología",scores:{T:3,B:1},
+       explainEN:"People who love tech class enjoy figuring out how software and devices work. They're often natural problem-solvers and builders.",
+       explainES:"Las personas que aman la clase de tecnología disfrutan descubrir cómo funcionan el software y los dispositivos."}
+    ]
+  },
+  {
+    en:"In a group project, what role do you naturally take on?",
+    es:"En un proyecto grupal, ¿qué papel tomas naturalmente?",
+    options:[
+      {en:"I'm the one who actually builds and gets things done",es:"Soy el que realmente construye y hace que las cosas se hagan",scores:{S:3,T:1},
+       explainEN:"You're the executor — the person who stops talking and starts doing. You turn ideas into real things that people can see and use.",
+       explainES:"Eres el ejecutor — la persona que deja de hablar y empieza a hacer. Conviertes las ideas en cosas reales."},
+      {en:"I come up with the creative ideas and concepts",es:"Se me ocurren las ideas creativas y los conceptos",scores:{C:3,B:1},
+       explainEN:"You're the visionary — the one who thinks outside the box and brings fresh, exciting ideas that nobody else thought of.",
+       explainES:"Eres el visionario — el que piensa fuera de lo común y trae ideas frescas y emocionantes que nadie más pensó."},
+      {en:"I keep the team together and make sure everyone is okay",es:"Mantengo al equipo unido y me aseguro de que todos estén bien",scores:{H:2,B:3},
+       explainEN:"You're the connector — the person everyone comes to, who makes sure the team communicates well and nobody feels left out.",
+       explainES:"Eres el conector — la persona a quien todos acuden, que se asegura de que el equipo se comunique bien."},
+      {en:"I research everything and plan it all out",es:"Investigo todo y lo planifico todo",scores:{T:2,B:2},
+       explainEN:"You're the strategist — you gather all the information first, then build the plan before anyone else starts moving.",
+       explainES:"Eres el estratega — recopilas toda la información primero y luego construyes el plan."}
+    ]
+  },
+  {
+    en:"What kind of place would you most want to work in?",
+    es:"¿En qué tipo de lugar te gustaría trabajar más?",
+    options:[
+      {en:"Outside or in a shop — working with my hands every day",es:"Afuera o en un taller — trabajando con mis manos cada día",scores:{S:3,H:1},
+       explainEN:"Jobs like construction, HVAC, electrical work, and plumbing — you're moving around and using your skills in the real world every day.",
+       explainES:"Trabajos como construcción, electricidad y plomería — te mueves y usas tus habilidades en el mundo real cada día."},
+      {en:"A studio, stage, or creative space",es:"Un estudio, escenario o espacio creativo",scores:{C:3,B:1},
+       explainEN:"Environments like a recording studio, art studio, design office, or theater — spaces made specifically for creating and performing.",
+       explainES:"Ambientes como un estudio de grabación, estudio de arte, oficina de diseño o teatro — espacios hechos para crear y actuar."},
+      {en:"A hospital, school, or community center",es:"Un hospital, escuela o centro comunitario",scores:{H:3,C:1},
+       explainEN:"Working directly with people every day — as a nurse, teacher, counselor, or social worker — where you make a real difference.",
+       explainES:"Trabajar directamente con personas cada día — como enfermero, maestro, consejero — donde haces una diferencia real."},
+      {en:"An office, lab, or from home on a computer",es:"Una oficina, laboratorio o desde casa en una computadora",scores:{T:3,B:2},
+       explainEN:"Working at a desk, in a research lab, or remotely — often in tech, finance, science, or business roles.",
+       explainES:"Trabajar en un escritorio, laboratorio de investigación o desde casa — generalmente en tecnología, finanzas o negocios."}
+    ]
+  },
+  {
+    en:"Which of these would make you feel the most proud?",
+    es:"¿Cuál de estos te haría sentir más orgulloso?",
+    options:[
+      {en:"Building something people can physically touch and use",es:"Construir algo que la gente pueda tocar y usar físicamente",scores:{S:3,T:1},
+       explainEN:"Like building a house, creating an app people download, or designing a product that sits on a store shelf — something real and tangible.",
+       explainES:"Como construir una casa, crear una app que la gente descargue o diseñar un producto que esté en la tienda — algo real y tangible."},
+      {en:"Creating something that makes people feel something",es:"Crear algo que haga que la gente sienta algo",scores:{C:3,H:1},
+       explainEN:"Like making a song that goes viral, designing a logo people love, or writing a story that makes someone cry or laugh.",
+       explainES:"Como hacer una canción viral, diseñar un logo que la gente ame o escribir una historia que haga llorar o reír a alguien."},
+      {en:"Changing or improving someone's life",es:"Cambiar o mejorar la vida de alguien",scores:{H:3,B:1},
+       explainEN:"Like helping a student pass a class, supporting someone through a hard time, or connecting a family with the help they need.",
+       explainES:"Como ayudar a un estudiante a pasar una clase, apoyar a alguien en un momento difícil o conectar a una familia con la ayuda que necesita."},
+      {en:"Discovering something new or solving a really hard problem",es:"Descubrir algo nuevo o resolver un problema muy difícil",scores:{T:3,S:1},
+       explainEN:"Like cracking a bug in code no one else could solve, finding a new scientific pattern, or solving a complex puzzle.",
+       explainES:"Como resolver un error en el código que nadie pudo arreglar, encontrar un patrón científico nuevo o resolver un problema complejo."}
+    ]
+  },
+  {
+    en:"When something stops working, what do you do first?",
+    es:"Cuando algo deja de funcionar, ¿qué haces primero?",
+    options:[
+      {en:"Try to open it up and figure out what went wrong",es:"Intento abrirlo y descubrir qué salió mal",scores:{S:3,T:2},
+       explainEN:"This is the natural instinct of engineers and builders — getting hands-on with the problem to understand it from the inside.",
+       explainES:"Este es el instinto natural de los ingenieros y constructores — trabajar directamente con el problema para entenderlo desde adentro."},
+      {en:"Think of a totally different way to solve it",es:"Pienso en una forma totalmente diferente de resolverlo",scores:{C:2,T:2},
+       explainEN:"This is the creative problem-solver — instead of fixing what's broken, you imagine a completely new approach to reach the same goal.",
+       explainES:"Este es el solucionador creativo — en lugar de arreglar lo que está roto, imaginas un enfoque completamente nuevo."},
+      {en:"Ask someone for help and talk through it together",es:"Le pido ayuda a alguien y lo hablamos juntos",scores:{H:2,B:2},
+       explainEN:"This is the collaborative approach — using your network and communication skills to solve things together rather than alone.",
+       explainES:"Este es el enfoque colaborativo — usar tus habilidades de comunicación para resolver las cosas juntos en lugar de solo."},
+      {en:"Search for answers online and read about it",es:"Busco respuestas en línea y leo sobre el tema",scores:{T:3,B:1},
+       explainEN:"This is the researcher's instinct — going to reliable sources, finding information, and using knowledge to solve the problem.",
+       explainES:"Este es el instinto del investigador — ir a fuentes confiables, encontrar información y usar el conocimiento para resolver el problema."}
+    ]
+  },
+  {
+    en:"Which type of show or video do you watch most?",
+    es:"¿Qué tipo de programa o video ves más?",
+    options:[
+      {en:"How things are made, engineering, or DIY / build videos",es:"Cómo se hacen las cosas, ingeniería o videos de construcción hazlo tú mismo",scores:{S:3,T:2},
+       explainEN:"You're genuinely interested in how things are put together — you don't just watch, you pay attention to how it actually works.",
+       explainES:"Estás genuinamente interesado en cómo se ensamblan las cosas — no solo miras, prestas atención a cómo realmente funciona."},
+      {en:"Music videos, art, film, fashion, or comedy",es:"Videos musicales, arte, cine, moda o comedia",scores:{C:3,B:1},
+       explainEN:"You spend time on creative content — you're inspired by what people create, and it probably makes you want to make something too.",
+       explainES:"Pasas tiempo en contenido creativo — te inspira lo que la gente crea, y probablemente te hace querer crear algo también."},
+      {en:"True crime, documentaries, or real human stories",es:"Crimen real, documentales o historias humanas reales",scores:{H:2,B:2},
+       explainEN:"You're drawn to real stories about people — understanding what motivates them, what goes wrong, and how communities respond.",
+       explainES:"Te atraen las historias reales sobre personas — entender qué las motiva y cómo las comunidades responden."},
+      {en:"Science, tech, history, or news content",es:"Contenido de ciencias, tecnología, historia o noticias",scores:{T:3,B:1},
+       explainEN:"You stay informed and curious — new discoveries, technology updates, and current events keep your attention naturally.",
+       explainES:"Te mantienes informado y curioso — los nuevos descubrimientos, actualizaciones tecnológicas y eventos actuales capturan tu atención."}
+    ]
+  },
+  {
+    en:"Which skill feels like your biggest strength right now?",
+    es:"¿Cuál habilidad sientes que es tu mayor fortaleza ahora mismo?",
+    options:[
+      {en:"Working with my hands — building, fixing, making things",es:"Trabajar con mis manos — construir, arreglar, hacer cosas",scores:{S:3,T:1},
+       explainEN:"This hands-on skill is one of the most valuable in the world — not everyone has it, and people will always pay for someone who does.",
+       explainES:"Esta habilidad práctica es una de las más valiosas del mundo — no todos la tienen, y la gente siempre pagará a alguien que la tenga."},
+      {en:"Being creative and coming up with original ideas",es:"Ser creativo y tener ideas originales",scores:{C:3,B:1},
+       explainEN:"You see things differently and can communicate that vision — through art, writing, design, or storytelling in a way others can't.",
+       explainES:"Ves las cosas de manera diferente y puedes comunicar esa visión — a través del arte, escritura o diseño de una manera única."},
+      {en:"Talking to people, listening, and making them feel heard",es:"Hablar con las personas, escuchar y hacer que se sientan escuchadas",scores:{H:3,B:2},
+       explainEN:"This is emotional intelligence — reading the room, listening well, making people feel understood. It's one of the most powerful career skills.",
+       explainES:"Esta es la inteligencia emocional — leer el ambiente, escuchar bien, hacer que las personas se sientan comprendidas. Es una de las habilidades más poderosas."},
+      {en:"Analyzing information and thinking things through logically",es:"Analizar información y pensar las cosas de forma lógica",scores:{T:3,B:1},
+       explainEN:"You break down problems step by step, think in patterns, and make decisions based on facts. That's how engineers, analysts, and strategists think.",
+       explainES:"Desglosas los problemas paso a paso, piensas en patrones y tomas decisiones basadas en hechos. Así piensan los ingenieros y analistas."}
+    ]
+  },
+  {
+    en:"Money matters. Which earning path sounds best to you?",
+    es:"El dinero importa. ¿Cuál camino de ingresos te parece mejor?",
+    options:[
+      {en:"Get trained fast, earn a license, start making good money",es:"Capacitarme rápido, obtener una licencia, empezar a ganar bien",scores:{S:3,T:1},
+       explainEN:"Trade school programs take 6 months to 2 years. Electricians and plumbers in Florida earn $60k–$90k+ with no 4-year college debt.",
+       explainES:"Los programas técnicos toman de 6 meses a 2 años. Los electricistas y plomeros en Florida ganan $60k–$90k+ sin deudas universitarias."},
+      {en:"Build my own brand, business, or creative career",es:"Construir mi propia marca, negocio o carrera creativa",scores:{C:3,B:2},
+       explainEN:"Build income from your creativity — a YouTube channel, design studio, clothing brand, or music career that you own and control.",
+       explainES:"Construye ingresos con tu creatividad — un canal de YouTube, estudio de diseño, marca de ropa o carrera musical que tú posees."},
+      {en:"Help people every day with good benefits and job security",es:"Ayudar a personas cada día con buenos beneficios y seguridad laboral",scores:{H:3,B:1},
+       explainEN:"Jobs like nursing and teaching come with health insurance, retirement plans, and job security — plus the feeling of making a real difference.",
+       explainES:"Trabajos como enfermería y enseñanza incluyen seguro médico, planes de retiro y seguridad laboral — más la satisfacción de marcar una diferencia."},
+      {en:"Invest in education and land a high-paying professional career",es:"Invertir en educación y conseguir una carrera profesional bien pagada",scores:{T:2,B:3},
+       explainEN:"Software engineers, financial analysts, and doctors require more school — but the investment leads to some of the highest salaries available.",
+       explainES:"Los ingenieros de software, analistas financieros y médicos requieren más estudio — pero la inversión lleva a algunos de los salarios más altos disponibles."}
+    ]
+  },
+  {
+    en:"Pick the sentence that sounds most like you:",
+    es:"Elige la frase que más se parece a ti:",
+    options:[
+      {en:"I like knowing exactly how things work — under the hood",es:"Me gusta saber exactamente cómo funcionan las cosas — por dentro",scores:{T:3,S:2},
+       explainEN:"'Under the hood' means behind the scenes — wanting to understand the code behind an app, the wiring inside a wall, or how an engine runs.",
+       explainES:"'Por dentro' significa detrás de escena — querer entender el código detrás de una app, el cableado en una pared o cómo funciona un motor."},
+      {en:"I want to make something that people will remember",es:"Quiero hacer algo que la gente recuerde",scores:{C:3,H:1},
+       explainEN:"This is the goal of every artist, musician, filmmaker, and designer — creating something so impactful it stays with people forever.",
+       explainES:"Este es el objetivo de todo artista, músico, cineasta y diseñador — crear algo tan impactante que se quede con las personas para siempre."},
+      {en:"I want to be the person people come to when they need help",es:"Quiero ser la persona a la que la gente acude cuando necesita ayuda",scores:{H:3,C:1},
+       explainEN:"This is the heart of healthcare, counseling, teaching, and social work — being the one who shows up for people in their hardest moments.",
+       explainES:"Este es el corazón de la atención médica, la consejería, la enseñanza y el trabajo social — ser quien está presente en los momentos más difíciles."},
+      {en:"I want to be in charge and build something big",es:"Quiero estar a cargo y construir algo grande",scores:{B:3,T:1},
+       explainEN:"This is the entrepreneur and leader mindset — you think about strategy, growth, and how to make your vision happen at scale.",
+       explainES:"Esta es la mentalidad del emprendedor y líder — piensas en estrategia, crecimiento y cómo hacer que tu visión suceda a gran escala."}
+    ]
+  },
+  {
+    en:"How do you feel about going to college for 4 or more years?",
+    es:"¿Cómo te sientes con respecto a ir a la universidad por 4 o más años?",
+    options:[
+      {en:"I'd rather learn a skill quickly and start working",es:"Prefiero aprender una habilidad rápido y empezar a trabajar",scores:{S:3,C:1},
+       explainEN:"That's the trade school path — you graduate in under 2 years with a license and often a job already lined up. No long wait.",
+       explainES:"Ese es el camino de la escuela técnica — te gradúas en menos de 2 años con una licencia y a menudo un trabajo ya esperándote."},
+      {en:"I'm open to it if the career I want requires it",es:"Estoy abierto a eso si la carrera que quiero lo requiere",scores:{B:2,H:2},
+       explainEN:"That's a flexible and smart mindset — you're not locked into one path. You'll decide based on what your dream career actually needs.",
+       explainES:"Esa es una mentalidad flexible e inteligente — no estás cerrado en un camino. Decidirás según lo que tu carrera soñada realmente necesita."},
+      {en:"Yes — I want the full college experience",es:"Sí — quiero vivir la experiencia universitaria completa",scores:{C:2,H:2},
+       explainEN:"College isn't just about a degree — it's campus life, clubs, sports, lifelong friendships, and growing into who you're meant to be.",
+       explainES:"La universidad no es solo un título — es la vida en el campus, clubes, deportes, amistades para toda la vida y crecer en quien debes ser."},
+      {en:"Yes — I already know my career and it requires a specific degree",es:"Sí — ya sé mi carrera y requiere un título específico",scores:{T:2,B:2},
+       explainEN:"Some careers like doctor, lawyer, engineer, or pharmacist require specific degrees. If you know your path, that investment is worth it.",
+       explainES:"Algunas carreras como médico, abogado, ingeniero o farmacéutico requieren títulos específicos. Si conoces tu camino, esa inversión vale la pena."}
+    ]
+  },
+  {
+    en:"Imagine your life 10 years from now. Which sounds best?",
+    es:"Imagina tu vida dentro de 10 años. ¿Cuál suena mejor?",
+    options:[
+      {en:"I own my own trade business and have my own crew",es:"Soy dueño de mi propio negocio de oficios y tengo mi propio equipo",scores:{S:3,B:2},
+       explainEN:"You're the owner of a company that builds, installs, or repairs — with your own crew, your own schedule, and income you control.",
+       explainES:"Eres el dueño de una empresa que construye, instala o repara — con tu propio equipo, tu propio horario e ingresos que tú controlas."},
+      {en:"I'm doing creative work I'm passionate about every day",es:"Estoy haciendo trabajo creativo que me apasiona cada día",scores:{C:3,B:1},
+       explainEN:"You're designing, filming, writing, performing, or building a brand around your creative vision — and people love what you make.",
+       explainES:"Estás diseñando, filmando, escribiendo, actuando o construyendo una marca en torno a tu visión creativa — y a la gente le encanta lo que haces."},
+      {en:"I'm making a real difference in my community every day",es:"Estoy haciendo una diferencia real en mi comunidad cada día",scores:{H:3,C:1},
+       explainEN:"You come home every day knowing you helped someone — a patient, a student, a family — and that feeling of purpose never goes away.",
+       explainES:"Llegas a casa cada día sabiendo que ayudaste a alguien — un paciente, un estudiante, una familia — y ese sentimiento de propósito nunca desaparece."},
+      {en:"I'm a leader and expert that people in my field look up to",es:"Soy un líder y experto al que la gente en mi campo admira",scores:{T:2,B:3},
+       explainEN:"You're the go-to person in your industry — known for your expertise in tech, finance, law, medicine, or business leadership.",
+       explainES:"Eres la persona clave en tu industria — conocido por tu experiencia en tecnología, finanzas, derecho, medicina o liderazgo empresarial."}
+    ]
+  }
+];
+
+/* ── SCHOOL DATABASE ── */
+var SCHOOLS={
+  broward:{name:"Broward College",type:"community_college",loc:"Fort Lauderdale, FL",wiki:"Broward_College",en:"The home base of Y.I.L. — affordable, close, and has programs in almost every field.",es:"La base de Y.I.L. — económico, cerca de casa y con programas en casi todos los campos.",programsEN:{T:"Computer Science, Cybersecurity, Network Administration, IT Support",C:"Digital Media, Film Production, Graphic Design, Photography",H:"Nursing (ASN), Health Sciences, Criminal Justice, Early Childhood Education",B:"Business Administration, Accounting, Marketing, Entrepreneurship",S:"Construction Management, Engineering Technology, Electrical Technology"},programsES:{T:"Ciencias de la Computación, Ciberseguridad, Administración de Redes",C:"Medios Digitales, Producción de Cine, Diseño Gráfico, Fotografía",H:"Enfermería, Ciencias de la Salud, Justicia Criminal, Educación",B:"Administración de Empresas, Contabilidad, Marketing, Emprendimiento",S:"Gestión de Construcción, Tecnología en Ingeniería, Tecnología Eléctrica"},noteEN:"Tuition is very affordable — around $103 per credit. Many programs transfer directly to FIU, FAU, or NSU.",noteES:"La matrícula es muy económica — alrededor de $103 por crédito. Muchos programas se transfieren directamente a FIU, FAU o NSU."},
+  nsu:{name:"Nova Southeastern University",type:"university",loc:"Davie, FL",wiki:"Nova_Southeastern_University",en:"Right in Davie with strong programs in tech, health, business, and law — plus great financial aid.",es:"En Davie con sólidos programas en tecnología, salud, negocios y derecho — más buena ayuda financiera.",programsEN:{T:"Computer Science, Cybersecurity, Data Science, Information Technology",H:"Nursing (BSN/MSN), Psychology, Social Work, Public Health, Pre-Med",B:"Business Administration, Finance, Marketing, MBA, Entrepreneurship",C:"",S:""},programsES:{T:"Ciencias de la Computación, Ciberseguridad, Ciencia de Datos",H:"Enfermería, Psicología, Trabajo Social, Salud Pública",B:"Administración de Empresas, Finanzas, Marketing, MBA",C:"",S:""},noteEN:"NSU offers strong scholarship programs and is one of the most diverse universities in Florida.",noteES:"NSU ofrece sólidos programas de becas y es una de las universidades más diversas de Florida."},
+  fiu:{name:"Florida International University (FIU)",type:"university",loc:"Miami, FL",wiki:"Florida_International_University",en:"One of the biggest and most diverse universities in South Florida — strong job connections across every field.",es:"Una de las universidades más grandes y diversas del sur de Florida — conexiones laborales sólidas en todos los campos.",programsEN:{T:"Computer Science, Electrical Engineering, IT, Cybersecurity, Data Analytics",H:"Nursing, Social Work, Public Health, Criminal Justice, Education",B:"Business Admin, Finance, International Business, Real Estate, Accounting",C:"Communications, Digital Media, Art, Journalism, Music",S:"Civil Engineering, Construction Management"},programsES:{T:"Ciencias de la Computación, Ingeniería Eléctrica, Ciberseguridad",H:"Enfermería, Trabajo Social, Salud Pública, Justicia Criminal",B:"Administración de Empresas, Finanzas, Negocios Internacionales",C:"Comunicaciones, Medios Digitales, Arte, Periodismo, Música",S:"Ingeniería Civil, Gestión de Construcción"},noteEN:"FIU is a top Hispanic-serving institution and one of the best values in Florida for a 4-year degree.",noteES:"FIU es una de las mejores instituciones de servicio hispano y uno de los mejores valores en Florida."},
+  fau:{name:"Florida Atlantic University (FAU)",type:"university",loc:"Boca Raton, FL",wiki:"Florida_Atlantic_University",en:"About 30 minutes away with strong programs in engineering, business, nursing, and communications.",es:"A unos 30 minutos con sólidos programas en ingeniería, negocios, enfermería y comunicaciones.",programsEN:{T:"Computer Science, Computer Engineering, Software Engineering, Cybersecurity",H:"Nursing (BSN), Social Work, Criminal Justice, Education, Public Health",B:"Business Admin, Finance, Marketing, Entrepreneurship, Accounting",C:"Communication, Digital Media, Multimedia Studies",S:"Civil Engineering, Construction Management"},programsES:{T:"Ciencias de la Computación, Ingeniería en Computadoras, Ciberseguridad",H:"Enfermería, Trabajo Social, Justicia Criminal, Educación",B:"Administración de Empresas, Finanzas, Marketing, Emprendimiento",C:"Comunicación, Medios Digitales",S:"Ingeniería Civil, Gestión de Construcción"},noteEN:"FAU has a growing research program and strong ties to businesses in the South Florida area.",noteES:"FAU tiene un creciente programa de investigación y fuertes vínculos con empresas en el sur de Florida."},
+  um:{name:"University of Miami",type:"university",loc:"Coral Gables, FL",wiki:"University_of_Miami",en:"A prestigious South Florida university known for medicine, law, business, music, and the arts.",es:"Una prestigiosa universidad del sur de Florida reconocida en medicina, derecho, negocios, música y artes.",programsEN:{C:"Music Business, Film Studies, Communications, Architecture, Art & Art History",H:"Nursing, Public Health, Psychology, Social Work, Pre-Med",B:"Business Admin, Finance, Marketing, Real Estate, Entrepreneurship",T:"",S:""},programsES:{C:"Negocios Musicales, Estudios de Cine, Comunicaciones, Arquitectura, Arte",H:"Enfermería, Salud Pública, Psicología, Trabajo Social",B:"Administración de Empresas, Finanzas, Marketing, Bienes Raíces",T:"",S:""},noteEN:"UM offers generous merit scholarships for high-achieving students.",noteES:"UM ofrece generosas becas por mérito para estudiantes destacados."},
+  mdcc:{name:"Miami Dade College",type:"community_college",loc:"Miami, FL",wiki:"Miami_Dade_College",en:"The largest college in Florida — incredibly diverse, affordable, and has programs for every kind of student.",es:"El colegio más grande de Florida — muy diverso, económico y con programas para todo tipo de estudiante.",programsEN:{T:"Computer Science, Cybersecurity, Software Development, Data Analytics",C:"Film, Digital Media, Graphic Design, Music, Animation, Fashion",H:"Nursing (ASN), Medical Assisting, Health Information, Criminal Justice",B:"Business Admin, Entrepreneurship, Accounting, Marketing, Hospitality",S:"Electrical Technology, HVAC, Construction, Welding, Automotive"},programsES:{T:"Ciencias de la Computación, Ciberseguridad, Desarrollo de Software",C:"Cine, Medios Digitales, Diseño Gráfico, Música, Animación, Moda",H:"Enfermería, Asistente Médico, Información de Salud, Justicia Criminal",B:"Administración de Empresas, Emprendimiento, Contabilidad, Marketing",S:"Tecnología Eléctrica, HVAC, Construcción, Soldadura, Automotriz"},noteEN:"Miami Dade has 8 campuses across Miami-Dade County and is one of the most affordable paths to a degree.",noteES:"Miami Dade tiene 8 campus en todo el Condado de Miami-Dade y es uno de los caminos más económicos hacia un título."},
+  barry:{name:"Barry University",type:"university",loc:"Miami Shores, FL",wiki:"Barry_University",en:"A student-focused university in Miami Shores known for nursing, social work, law, and education.",es:"Una universidad enfocada en el estudiante en Miami Shores, reconocida por enfermería, trabajo social y educación.",programsEN:{H:"Nursing (BSN/MSN), Social Work, Criminal Justice, Psychology, Health Services Admin",B:"Business Admin, Marketing, Sport Management, Accounting",C:"Communications, Digital Media, Fine Arts, Music",T:"",S:""},programsES:{H:"Enfermería, Trabajo Social, Justicia Criminal, Psicología, Administración de Salud",B:"Administración de Empresas, Marketing, Gestión Deportiva, Contabilidad",C:"Comunicaciones, Medios Digitales, Bellas Artes, Música",T:"",S:""},noteEN:"Barry is a values-driven university with a very supportive campus community and good financial aid.",noteES:"Barry es una universidad basada en valores con una comunidad estudiantil muy solidaria y buena ayuda financiera."},
+  famu:{name:"Florida A&M University (FAMU)",type:"hbcu",loc:"Tallahassee, FL",wiki:"Florida_A%26M_University",en:"Florida's only public HBCU — a powerhouse for engineering, business, pharmacy, and public health.",es:"La única HBCU pública de Florida — una potencia en ingeniería, negocios, farmacia y salud pública.",programsEN:{T:"Computer Science, Electrical Engineering, Computer Engineering, IT",H:"Nursing, Pharmacy (top-ranked), Public Health, Social Work",B:"Business Admin, Finance, Accounting, Marketing, MBA",C:"Journalism, Communications, Fine Arts, Music, Architecture",S:"Civil Engineering, Construction Management, Chemical Engineering"},programsES:{T:"Ciencias de la Computación, Ingeniería Eléctrica, Tecnología de la Información",H:"Enfermería, Farmacia (clasificada entre las mejores), Salud Pública",B:"Administración de Empresas, Finanzas, Contabilidad, Marketing",C:"Periodismo, Comunicaciones, Bellas Artes, Música, Arquitectura",S:"Ingeniería Civil, Gestión de Construcción"},noteEN:"FAMU's pharmacy program is one of the best in the country. Powerful alumni network and a strong legacy of Black excellence.",noteES:"El programa de farmacia de FAMU es uno de los mejores del país. Red de exalumnos poderosa y un fuerte legado de excelencia negra."},
+  bethune:{name:"Bethune-Cookman University",type:"hbcu",loc:"Daytona Beach, FL",wiki:"Bethune-Cookman_University",en:"A historic HBCU founded by Dr. Mary McLeod Bethune — strong in nursing, business, education, and communications.",es:"Una histórica HBCU fundada por la Dra. Mary McLeod Bethune — sólida en enfermería, negocios, educación y comunicaciones.",programsEN:{H:"Nursing (BSN), Social Work, Criminal Justice, Psychology, Education",B:"Business Admin, Accounting, Marketing, Hospitality Management",C:"Communications, Music, Performing Arts, Journalism",T:"Computer Science, Information Technology",S:""},programsES:{H:"Enfermería, Trabajo Social, Justicia Criminal, Psicología, Educación",B:"Administración de Empresas, Contabilidad, Marketing",C:"Comunicaciones, Música, Artes Escénicas, Periodismo",T:"Ciencias de la Computación, Tecnología de la Información",S:""},noteEN:"BCU was founded in 1904 and carries a powerful legacy of Black excellence. Tight-knit and highly supportive campus.",noteES:"BCU fue fundada en 1904 y lleva un poderoso legado de excelencia negra. Campus muy unido y solidario."},
+  edward:{name:"Edward Waters University",type:"hbcu",loc:"Jacksonville, FL",wiki:"Edward_Waters_University",en:"Florida's oldest HBCU — a tight-knit community focused on business, education, criminal justice, and the arts.",es:"La HBCU más antigua de Florida — una comunidad unida enfocada en negocios, educación, justicia criminal y artes.",programsEN:{H:"Criminal Justice, Social Work, Psychology, Education",B:"Business Administration, Accounting, Sport Management",C:"Music, English, Communication, Fine Arts",T:"",S:""},programsES:{H:"Justicia Criminal, Trabajo Social, Psicología, Educación",B:"Administración de Empresas, Contabilidad, Gestión Deportiva",C:"Música, Inglés, Comunicación, Bellas Artes",T:"",S:""},noteEN:"EWU was founded in 1866 — Florida's oldest HBCU. Small class sizes mean professors know your name and care about your success.",noteES:"EWU fue fundada en 1866 — la HBCU más antigua de Florida. Los grupos pequeños significan que los profesores conocen tu nombre y se preocupan por tu éxito."},
+  fullsail:{name:"Full Sail University",type:"university",loc:"Winter Park, FL",wiki:"Full_Sail_University",en:"Florida's top school for creative careers — film, music, game design, and media production with real studio experience.",es:"La mejor escuela de Florida para carreras creativas — cine, música, diseño de juegos y producción de medios con experiencia real en estudio.",programsEN:{C:"Film Production, Music Production, Game Design, Graphic Design, Creative Writing, Web Design, Animation, Recording Arts",H:"",B:"Entertainment Business",T:"Web Development, Cybersecurity",S:""},programsES:{C:"Producción de Cine, Producción Musical, Diseño de Juegos, Diseño Gráfico, Escritura Creativa, Diseño Web, Animación",H:"",B:"Negocios del Entretenimiento",T:"Desarrollo Web, Ciberseguridad",S:""},noteEN:"Full Sail programs can be completed in under 2 years. Students work with real industry equipment from day one.",noteES:"Los programas de Full Sail se pueden completar en menos de 2 años. Los estudiantes trabajan con equipo real de la industria desde el primer día."},
+  mcfatter:{name:"McFatter Technical College",type:"trade_school",loc:"Davie, FL",wiki:"McFatter_Technical_College",en:"Right in Davie — top-rated trade school with programs in electrical, HVAC, welding, construction, and automotive.",es:"En Davie — escuela técnica de primera categoría con programas en electricidad, HVAC, soldadura, construcción y automotriz.",programsEN:{S:"Electrical Technology, HVAC/Refrigeration, Welding, Automotive Service, Building Construction, Plumbing, Cosmetology",H:"Practical Nursing (LPN), Medical Assisting, Dental Assisting",T:"",C:"",B:""},programsES:{S:"Tecnología Eléctrica, HVAC/Refrigeración, Soldadura, Servicio Automotriz, Construcción, Plomería, Cosmetología",H:"Enfermería Práctica (LPN), Asistente Médico, Asistente Dental",T:"",C:"",B:""},noteEN:"Most programs at McFatter take 9–18 months. Very affordable and many graduates get hired before they finish.",noteES:"La mayoría de los programas en McFatter toman 9–18 meses. Muy económico y muchos graduados son contratados antes de terminar."},
+  sheridan:{name:"Sheridan Technical College",type:"trade_school",loc:"Hollywood, FL",wiki:"Sheridan_Technical_College",en:"One of Broward County's top trade schools — hands-on training that leads directly to a license.",es:"Una de las mejores escuelas técnicas del Condado de Broward — formación práctica que lleva directamente a una licencia.",programsEN:{S:"Electrical Technology, HVAC, Plumbing, Welding, Automotive, Building Construction",H:"Practical Nursing (LPN), Medical Assisting, Patient Care Technician",T:"",C:"",B:""},programsES:{S:"Tecnología Eléctrica, HVAC, Plomería, Soldadura, Automotriz, Construcción",H:"Enfermería Práctica (LPN), Asistente Médico, Técnico de Cuidado al Paciente",T:"",C:"",B:""},noteEN:"Sheridan has one of the highest job placement rates in South Florida. Day and evening schedules available.",noteES:"Sheridan tiene una de las tasas de colocación laboral más altas del sur de Florida. Horarios de día y noche disponibles."},
+  google:{name:"Google Career Certificates",type:"online",loc:"Online",wiki:"Google",en:"Earn a real Google certificate in under 6 months — great for tech and business, start right now.",es:"Obtén un certificado real de Google en menos de 6 meses — ideal para tecnología y negocios, empieza ahora.",programsEN:{T:"IT Support, Cybersecurity, Data Analytics, UX Design",B:"Digital Marketing & E-commerce, Project Management",H:"",C:"",S:""},programsES:{T:"Soporte IT, Ciberseguridad, Análisis de Datos, Diseño UX",B:"Marketing Digital y E-commerce, Gestión de Proyectos",H:"",C:"",S:""},noteEN:"Recognized by 150+ employers including Google, Deloitte, and Walmart. Many courses are free or very low cost.",noteES:"Reconocido por más de 150 empleadores incluyendo Google, Deloitte y Walmart. Muchos cursos son gratuitos o de muy bajo costo."},
+  hubspot:{name:"HubSpot Academy",type:"online",loc:"Online (Free)",wiki:"HubSpot",en:"100% free marketing and business certifications you can put on a resume while still in school.",es:"Certificaciones 100% gratuitas de marketing y negocios que puedes poner en tu currículum mientras estás en la escuela.",programsEN:{B:"Digital Marketing, Inbound Marketing, Sales, Email Marketing, Business Strategy",C:"Content Marketing, Social Media Marketing, SEO",H:"",T:"",S:""},programsES:{B:"Marketing Digital, Marketing de Contenidos, Ventas, Email Marketing",C:"Marketing de Contenidos, Redes Sociales, SEO",H:"",T:"",S:""},noteEN:"HubSpot certifications are completely free and respected by marketing employers worldwide. You can complete one in a weekend.",noteES:"Las certificaciones de HubSpot son completamente gratuitas y respetadas por empleadores en todo el mundo. Puedes completar una en un fin de semana."},
+  skillshare:{name:"Skillshare / Adobe Creative Cloud",type:"online",loc:"Online",wiki:"Adobe_Inc",en:"Affordable online courses used by real working designers — perfect for building a creative portfolio right now.",es:"Cursos en línea económicos usados por diseñadores profesionales reales — perfectos para crear un portafolio ahora.",programsEN:{C:"Graphic Design, Video Editing, Animation, Illustration, Photography, Branding, UI/UX Design",H:"",B:"",T:"",S:""},programsES:{C:"Diseño Gráfico, Edición de Video, Animación, Ilustración, Fotografía, Branding, Diseño UI/UX",H:"",B:"",T:"",S:""},noteEN:"Skillshare has thousands of creative courses taught by working professionals. Try it free for a month.",noteES:"Skillshare tiene miles de cursos creativos impartidos por profesionales activos. Pruébalo gratis por un mes."}
+};
+
+var profileSchools={T:['nsu','broward','fiu','fau','famu','mdcc','google'],C:['broward','fullsail','mdcc','famu','bethune','barry','skillshare'],H:['broward','nsu','fau','barry','bethune','mdcc','sheridan'],B:['nsu','broward','fiu','famu','bethune','mdcc','hubspot'],S:['mcfatter','sheridan','broward','mdcc','famu','fau','google']};
+
+/* ── PROFILES ── */
+var profiles={
+  T:{
+    en:{archetype:"The Innovator",tagline:"You love figuring out how things work — and you're great at it.",description:"You're the type of person who likes to understand things deeply and make them better. Careers in technology, computers, and engineering are a perfect fit. These jobs pay really well and you can work from almost anywhere in the world.",
+    careers:[{icon:"💻",name:"Software Developer",salary:"$75k–$130k/yr",desc:"A software developer writes the code that makes apps, websites, and programs work. Think about every app on your phone — someone built that. You'd spend your days creating digital tools that millions of people use every single day."},
+    {icon:"🔐",name:"Cybersecurity Analyst",salary:"$70k–$115k/yr",desc:"A cybersecurity analyst protects companies from hackers and digital threats. You'd monitor systems, investigate suspicious activity, and build defenses to keep important data safe. It's like being a digital security guard for entire organizations."},
+    {icon:"📊",name:"Data Analyst",salary:"$60k–$100k/yr",desc:"A data analyst studies numbers and patterns to help companies make smarter decisions. Think of it like being a detective — but instead of crime scenes, you work with data to find hidden insights that change how businesses operate."},
+    {icon:"🤖",name:"AI / ML Engineer",salary:"$90k–$150k/yr",desc:"An AI engineer builds technology that makes computers think and learn on their own — like voice assistants on your phone or Netflix recommendations. This is one of the fastest-growing and highest-paying fields in the world right now."}],
+    nextSteps:["🎮 Search YouTube: 'What does a software developer do all day' — just watch one short video this week.","📱 Download a free app called Grasshopper — it teaches coding through quick games on your phone.","💬 Ask a parent or counselor: 'How do I sign up for the tech class at Broward College?'"]},
+    es:{archetype:"El Innovador",tagline:"Te encanta descubrir cómo funcionan las cosas — y se te da muy bien.",description:"Eres el tipo de persona que le gusta entender las cosas profundamente y hacerlas mejores. Las carreras en tecnología, computadoras e ingeniería son perfectas para ti. Estos trabajos pagan muy bien y puedes trabajar desde casi cualquier lugar del mundo.",
+    careers:[{icon:"💻",name:"Desarrollador de Software",salary:"$75k–$130k/año",desc:"Un desarrollador de software escribe el código que hace funcionar las apps, sitios web y programas. Piensa en cada app en tu teléfono — alguien la construyó. Pasarías tus días creando herramientas digitales que usan millones de personas cada día."},
+    {icon:"🔐",name:"Analista de Ciberseguridad",salary:"$70k–$115k/año",desc:"Un analista de ciberseguridad protege a las empresas de hackers y amenazas digitales. Monitorearías sistemas, investigarías actividad sospechosa y construirías defensas para mantener los datos seguros. Es como ser un guardia de seguridad digital."},
+    {icon:"📊",name:"Analista de Datos",salary:"$60k–$100k/año",desc:"Un analista de datos estudia números y patrones para ayudar a las empresas a tomar decisiones más inteligentes. Es como ser detective — pero en lugar de escenas del crimen, trabajas con datos para encontrar información oculta."},
+    {icon:"🤖",name:"Ingeniero de IA / ML",salary:"$90k–$150k/año",desc:"Un ingeniero de IA construye tecnología que hace que las computadoras piensen y aprendan por sí solas — como los asistentes de voz o las recomendaciones de Netflix. Es uno de los campos de más rápido crecimiento y mejor pagados del mundo."}],
+    nextSteps:["🎮 Busca en YouTube: '¿Qué hace un desarrollador de software?' — solo ve un video corto esta semana.","📱 Descarga una app gratis llamada Grasshopper — te enseña programación con juegos rápidos en tu celular.","💬 Pregúntale a un padre o consejero: '¿Cómo me inscribo en la clase de tecnología en Broward College?'"]}
+  },
+  C:{
+    en:{archetype:"The Creator",tagline:"You see the world differently — and you know how to show it.",description:"Art, music, design, film, writing — you're drawn to making things that make people feel something. That is a real skill and a real career. Designers, content creators, and filmmakers are in massive demand right now.",
+    careers:[{icon:"🎨",name:"Graphic Designer",salary:"$45k–$85k/yr",desc:"A graphic designer creates the visual stuff you see every day — logos, posters, social media graphics, website layouts. You'd use tools like Photoshop and Canva to bring ideas to life. Every company and brand you see needs a graphic designer."},
+    {icon:"📱",name:"Content Creator / Social Media",salary:"$40k–$90k/yr",desc:"A content creator makes videos, photos, reels, and posts for brands or their own platform. You could manage a company's social media — or build your own audience. Top creators make six figures doing what they love every single day."},
+    {icon:"🎬",name:"Film / Video Producer",salary:"$50k–$100k/yr",desc:"A film or video producer plans, shoots, and edits video content — from short films to commercials to YouTube videos. You're in charge of telling a story visually, managing a crew, and making sure the final product looks incredible."},
+    {icon:"🖥️",name:"UX / UI Designer",salary:"$65k–$110k/yr",desc:"A UX/UI designer designs how apps and websites look and feel for the user. UX means making sure it's easy to use — UI means making sure it looks amazing. Every app you've used was designed by someone. This career combines creativity with technology."}],
+    nextSteps:["🎨 Make something this week — a drawing, a short video, a design on Canva. It doesn't have to be perfect, just start.","📸 Start saving your best creative work in one folder on your phone — photos, designs, writings.","💬 Search Instagram for a creator whose work you love and pay attention to how they built their path."]},
+    es:{archetype:"El Creador",tagline:"Ves el mundo de una manera diferente — y sabes cómo mostrarlo.",description:"Arte, música, diseño, cine, escritura — te atraen las cosas que hacen que la gente sienta algo. Esa es una habilidad real y una carrera real. Los diseñadores, creadores de contenido y cineastas tienen enorme demanda ahora mismo.",
+    careers:[{icon:"🎨",name:"Diseñador Gráfico",salary:"$45k–$85k/año",desc:"Un diseñador gráfico crea las cosas visuales que ves todos los días — logos, carteles, gráficos para redes sociales, diseños de sitios web. Usarías herramientas como Photoshop y Canva. Cada empresa y marca necesita un diseñador gráfico."},
+    {icon:"📱",name:"Creador de Contenido / Redes Sociales",salary:"$40k–$90k/año",desc:"Un creador de contenido hace videos, fotos, reels y publicaciones para marcas o su propia plataforma. Podrías manejar las redes sociales de una empresa — o construir tu propia audiencia. Los mejores creadores ganan seis cifras haciendo lo que aman."},
+    {icon:"🎬",name:"Productor de Cine / Video",salary:"$50k–$100k/año",desc:"Un productor de cine o video planifica, graba y edita contenido de video — desde cortometrajes hasta comerciales y videos de YouTube. Estás a cargo de contar una historia visualmente y asegurarte de que el producto final se vea increíble."},
+    {icon:"🖥️",name:"Diseñador UX / UI",salary:"$65k–$110k/año",desc:"Un diseñador UX/UI diseña cómo se ven y se sienten las apps y sitios web para el usuario. UX significa que sea fácil de usar — UI significa que se vea genial. Cada app que hayas usado fue diseñada por alguien. Esta carrera combina creatividad con tecnología."}],
+    nextSteps:["🎨 Crea algo esta semana — un dibujo, un video corto, un diseño en Canva. No tiene que ser perfecto, solo empieza.","📸 Empieza a guardar tu mejor trabajo creativo en una carpeta en tu celular — fotos, diseños, escritos.","💬 Busca en Instagram a un creador cuyo trabajo te encante y presta atención a cómo construyó su camino."]}
+  },
+  H:{
+    en:{archetype:"The Changemaker",tagline:"You care about people — and that makes you more powerful than you know.",description:"You're the kind of person who notices when someone needs help and actually does something about it. Nurses, teachers, counselors, and community leaders all share that same quality. These careers are meaningful AND pay really well.",
+    careers:[{icon:"🩺",name:"Registered Nurse",salary:"$60k–$100k/yr",desc:"A registered nurse takes care of patients in hospitals, clinics, or schools. You check vitals, give medications, assist doctors, and comfort patients and their families. Nurses are the backbone of healthcare — and Florida always needs more of them."},
+    {icon:"🧠",name:"Counselor / Social Worker",salary:"$45k–$75k/yr",desc:"A counselor or social worker helps people deal with mental health, family problems, or life challenges. You'd meet with clients, listen to their situation, and connect them with the right resources and support. It's one of the most human and meaningful careers you can have."},
+    {icon:"👩‍🏫",name:"Teacher / School Administrator",salary:"$45k–$80k/yr",desc:"A teacher educates students and helps shape who they become. You'd build real relationships with kids who will remember you for the rest of their lives. Administrators manage schools and make decisions that impact entire communities."},
+    {icon:"⚖️",name:"Criminal Justice / Law",salary:"$50k–$90k/yr",desc:"Careers in criminal justice include law enforcement, lawyers, judges, probation officers, and detectives. You'd work to protect communities and make sure the legal system is fair for everyone. If justice matters to you — this path is for you."}],
+    nextSteps:["🤝 Think of one person in your community you could help this week — even something small counts as real experience.","🎥 Search YouTube: 'A day in the life of a nurse' or 'A day in the life of a school counselor' — pick one and watch.","💬 Ask a teacher or counselor at your school how they got into their career — most people love to share their story."]},
+    es:{archetype:"El Agente de Cambio",tagline:"Te importa la gente — y eso te hace más poderoso de lo que crees.",description:"Eres el tipo de persona que nota cuando alguien necesita ayuda y hace algo al respecto. Enfermeras, maestros, consejeros y líderes comunitarios comparten esa misma cualidad. Estas carreras son significativas Y pagan muy bien.",
+    careers:[{icon:"🩺",name:"Enfermero/a Registrado/a",salary:"$60k–$100k/año",desc:"Un enfermero registrado cuida a los pacientes en hospitales, clínicas o escuelas. Verificas signos vitales, administras medicamentos, asistes a los médicos y confortas a los pacientes y sus familias. Las enfermeras son la columna vertebral de la atención médica — y Florida siempre necesita más."},
+    {icon:"🧠",name:"Consejero / Trabajador Social",salary:"$45k–$75k/año",desc:"Un consejero o trabajador social ayuda a las personas a enfrentar problemas de salud mental, familiares o desafíos de vida. Te reunirías con clientes, escucharías su situación y los conectarías con los recursos adecuados. Es una de las carreras más humanas y significativas."},
+    {icon:"👩‍🏫",name:"Maestro / Administrador Escolar",salary:"$45k–$80k/año",desc:"Un maestro educa a los estudiantes y ayuda a moldear quiénes se convertirán. Construirías relaciones reales con niños que te recordarán por el resto de sus vidas. Los administradores gestionan escuelas y toman decisiones que impactan a comunidades enteras."},
+    {icon:"⚖️",name:"Justicia Criminal / Derecho",salary:"$50k–$90k/año",desc:"Las carreras en justicia criminal incluyen policías, abogados, jueces y detectives. Trabajarías para proteger a las comunidades y asegurarte de que el sistema legal sea justo para todos. Si la justicia te importa — este camino es para ti."}],
+    nextSteps:["🤝 Piensa en una persona en tu comunidad a la que podrías ayudar esta semana — incluso algo pequeño cuenta como experiencia real.","🎥 Busca en YouTube: 'Un día en la vida de una enfermera' — escoge uno y míralo.","💬 Pregúntale a un maestro o consejero de tu escuela cómo llegó a esa carrera — la mayoría ama compartir su historia."]}
+  },
+  B:{
+    en:{archetype:"The Leader",tagline:"You see opportunities everywhere — and you know how to make things happen.",description:"You think big and you like being in charge. That's the entrepreneur mindset. Whether you want to run your own business, lead a team, or work in marketing or finance — you're already thinking the right way. You just need the right tools.",
+    careers:[{icon:"💼",name:"Entrepreneur / Business Owner",salary:"$50k–$200k+/yr",desc:"An entrepreneur starts and runs their own business. You could sell a product, offer a service, or build a brand — the ceiling is whatever you can dream up. It takes hustle and smart decisions, but there's no limit to what you can earn when you own it."},
+    {icon:"📈",name:"Marketing Manager",salary:"$55k–$100k/yr",desc:"A marketing manager decides how a company gets its message out to the world — through social media, ads, and campaigns. You'd study what customers want, create strategies to reach them, and measure what's working. Every brand you see advertised — this is the person behind it."},
+    {icon:"💰",name:"Financial Analyst / Accountant",salary:"$55k–$95k/yr",desc:"A financial analyst studies money — investments, budgets, and the financial health of a business. You'd help companies and people make smart decisions with their money. It's one of the most stable and in-demand careers no matter what the economy is doing."},
+    {icon:"🏢",name:"Business Operations Manager",salary:"$60k–$110k/yr",desc:"A business operations manager makes sure everything inside a company runs smoothly — staff, systems, and day-to-day processes. You're the person who solves problems before anyone else notices and keeps the whole organization moving forward efficiently."}],
+    nextSteps:["💡 Write down one business idea you have — doesn't matter how small. That's your very first step as an entrepreneur.","📺 Search YouTube: 'How to start a business as a teenager' — real stories from people your age who already did it.","📲 Check out Y.I.L.'s entrepreneur network — we connect young business owners so you don't have to figure it out alone."]},
+    es:{archetype:"El Líder",tagline:"Ves oportunidades en todas partes — y sabes cómo hacer que las cosas sucedan.",description:"Piensas en grande y te gusta estar a cargo. Esa es la mentalidad del emprendedor. Ya sea que quieras tener tu propio negocio, liderar un equipo o trabajar en marketing o finanzas — ya estás pensando de la manera correcta.",
+    careers:[{icon:"💼",name:"Emprendedor / Dueño de Negocio",salary:"$50k–$200k+/año",desc:"Un emprendedor inicia y dirige su propio negocio. Podrías vender un producto, ofrecer un servicio o construir una marca — el límite es lo que puedas soñar. Requiere esfuerzo y decisiones inteligentes, pero no hay límite para lo que puedes ganar cuando eres el dueño."},
+    {icon:"📈",name:"Gerente de Marketing",salary:"$55k–$100k/año",desc:"Un gerente de marketing decide cómo una empresa transmite su mensaje al mundo — a través de redes sociales, anuncios y campañas. Estudiarías qué quieren los clientes y crearías estrategias para llegar a ellos. Cada marca que ves anunciada — esta es la persona detrás."},
+    {icon:"💰",name:"Analista Financiero / Contador",salary:"$55k–$95k/año",desc:"Un analista financiero estudia el dinero — inversiones, presupuestos y la salud financiera de una empresa. Ayudarías a empresas y personas a tomar decisiones inteligentes con su dinero. Es una de las carreras más estables y demandadas sin importar cómo esté la economía."},
+    {icon:"🏢",name:"Gerente de Operaciones",salary:"$60k–$110k/año",desc:"Un gerente de operaciones se asegura de que todo dentro de una empresa funcione sin problemas — personal, sistemas y procesos diarios. Eres la persona que soluciona problemas antes de que alguien más los note y mantiene toda la organización avanzando eficientemente."}],
+    nextSteps:["💡 Escribe una idea de negocio que tengas — no importa qué tan pequeña sea. Ese es tu primer paso como emprendedor.","📺 Busca en YouTube: 'Cómo empezar un negocio siendo adolescente' — historias reales de personas de tu edad que ya lo hicieron.","📲 Conoce la red de emprendedores de Y.I.L. — conectamos a jóvenes empresarios para que no lo resuelvan solos."]}
+  },
+  S:{
+    en:{archetype:"The Builder",tagline:"You make things happen with your hands — and that skill is worth serious money.",description:"Electricians, plumbers, HVAC techs, and construction managers are some of the most in-demand workers in Florida. And the best part? You don't need four years of college. Get trained, get certified, and start earning good money faster than most people realize.",
+    careers:[{icon:"⚡",name:"Electrician",salary:"$55k–$95k/yr",desc:"An electrician installs and repairs the wiring, circuits, and electrical systems in homes and buildings. Every light switch, outlet, and panel you see was installed by an electrician. In Florida, licensed electricians are always in demand and can earn $80k+ running their own business."},
+    {icon:"❄️",name:"HVAC Technician",salary:"$50k–$85k/yr",desc:"An HVAC technician installs, maintains, and repairs air conditioning and heating systems. In Florida where it's hot almost year-round, AC technicians are essential and highly paid. You'd work on homes, commercial buildings, and everything in between."},
+    {icon:"🔧",name:"Plumber",salary:"$55k–$90k/yr",desc:"A plumber installs and repairs water pipes, drains, and plumbing systems in homes and buildings. Every sink, toilet, and shower requires a plumber. It's a hands-on career that pays extremely well — especially for licensed plumbers who run their own service business."},
+    {icon:"🏗️",name:"Construction Manager",salary:"$70k–$120k/yr",desc:"A construction manager oversees entire building projects — managing crews, timelines, budgets, and materials. You're the person who makes sure a building goes from blueprint to finished product on time and on budget. One of the highest-paying trade-based careers available."}],
+    nextSteps:["🔨 Search YouTube: 'What does an electrician do' or 'HVAC tech day in the life' — just watch one video this week.","📍 Ask a parent to look up McFatter Technical College in Davie — tours are free and it might be closer than you think.","💬 Talk to someone who works in a trade — a family member or contractor — and ask how they got started."]},
+    es:{archetype:"El Constructor",tagline:"Haces que las cosas sucedan con tus manos — y esa habilidad vale mucho dinero.",description:"Los electricistas, plomeros, técnicos de aire acondicionado y gerentes de construcción son algunos de los trabajadores más demandados en Florida. ¿Y lo mejor? No necesitas cuatro años de universidad. Capacítate, certifícate y empieza a ganar buen dinero más rápido de lo que imaginas.",
+    careers:[{icon:"⚡",name:"Electricista",salary:"$55k–$95k/año",desc:"Un electricista instala y repara el cableado, circuitos y sistemas eléctricos en hogares y edificios. Cada interruptor de luz y tomacorriente que ves fue instalado por un electricista. En Florida, los electricistas con licencia siempre tienen demanda y pueden ganar $80k+ con su propio negocio."},
+    {icon:"❄️",name:"Técnico de Aire Acondicionado (HVAC)",salary:"$50k–$85k/año",desc:"Un técnico HVAC instala, mantiene y repara sistemas de aire acondicionado. En Florida, donde hace calor casi todo el año, los técnicos de AC son esenciales y muy bien pagados. Trabajarías en hogares, edificios comerciales y todo lo que hay en medio."},
+    {icon:"🔧",name:"Plomero",salary:"$55k–$90k/año",desc:"Un plomero instala y repara tuberías de agua, desagües y sistemas de plomería en hogares y edificios. Cada lavabo, inodoro y ducha requiere un plomero. Es una carrera práctica que paga muy bien — especialmente para plomeros con licencia que tienen su propio negocio."},
+    {icon:"🏗️",name:"Gerente de Construcción",salary:"$70k–$120k/año",desc:"Un gerente de construcción supervisa proyectos de edificación completos — gestionando equipos, cronogramas, presupuestos y materiales. Eres la persona que asegura que un edificio pase de planos a producto terminado a tiempo y dentro del presupuesto."}],
+    nextSteps:["🔨 Busca en YouTube: '¿Qué hace un electricista?' — solo ve un video esta semana.","📍 Pídele a un padre que busque el McFatter Technical College en Davie — los recorridos son gratis.","💬 Habla con alguien que trabaje en un oficio — un familiar o contratista — y pregúntale cómo empezó."]}
+  }
+};
+
+/* ── STATE ── */
+var current=0, answers=[], lastWinner=null;
+var photoCache={};
+
+function fetchSchoolPhoto(schoolKey,imgEl){
+  if(photoCache[schoolKey]){if(photoCache[schoolKey]!=='none'){imgEl.src=photoCache[schoolKey];imgEl.style.display='block';imgEl.nextSibling&&(imgEl.nextSibling.style.display='none');}return;}
+  var wikiTitle=SCHOOLS[schoolKey]?SCHOOLS[schoolKey].wiki:null;
+  if(!wikiTitle)return;
+  fetch('https://en.wikipedia.org/w/api.php?action=query&titles='+wikiTitle+'&prop=pageimages&format=json&pithumbsize=700&origin=*')
+    .then(function(r){return r.json();})
+    .then(function(d){var pages=d.query.pages,page=pages[Object.keys(pages)[0]],src=page&&page.thumbnail?page.thumbnail.source:null;photoCache[schoolKey]=src||'none';if(src){imgEl.src=src;imgEl.style.display='block';imgEl.nextSibling&&(imgEl.nextSibling.style.display='none');}})
+    .catch(function(){photoCache[schoolKey]='none';});
+}
+
+/* ── LANG SWITCH ── */
+function setLang(l){
+  lang=l;
+  document.getElementById('btnEN').classList.toggle('active',l==='en');
+  document.getElementById('btnES').classList.toggle('active',l==='es');
+  var t=T[l];
+  document.getElementById('hBadge').textContent=t.badge;
+  document.getElementById('hSub').textContent=t.logoSub;
+  document.getElementById('hTitle').textContent=t.hTitle;
+  document.getElementById('hSubtitle').textContent=t.hSubtitle;
+  document.getElementById('startH2').textContent=t.startH2;
+  document.getElementById('startP').textContent=t.startP;
+  document.getElementById('startBtn').textContent=t.startBtn;
+  var tagEls=document.getElementById('startTags').querySelectorAll('.tag');
+  for(var i=0;i<tagEls.length;i++){tagEls[i].textContent=t.startTags[i];}
+  document.getElementById('loadH2').textContent=t.loadH2;
+  document.getElementById('loadP').textContent=t.loadP;
+  document.getElementById('backTxt').textContent=t.back;
+  var nt=document.getElementById('nextTxt');if(nt)nt.textContent=current===questions.length-1?t.seeResults:t.next;
+  document.getElementById('modalTagline').textContent=t.modalTagline;
+  document.getElementById('mh1').textContent=t.mh1;document.getElementById('mp1').textContent=t.mp1;
+  document.getElementById('mh2').textContent=t.mh2;
+  document.querySelector('.mp-mentor').textContent=t.mpMentor;document.querySelector('.mp-career').textContent=t.mpCareer;
+  document.querySelector('.mp-entre').textContent=t.mpEntre;document.querySelector('.mp-comm').textContent=t.mpComm;
+  document.querySelector('.mp-beach').textContent=t.mpBeach;document.querySelector('.mp-food').textContent=t.mpFood;
+  document.querySelector('.mp-web').textContent=t.mpWeb;document.querySelector('.mp-net').textContent=t.mpNet;
+  document.getElementById('mh3').textContent=t.mh3;document.getElementById('mp3').textContent=t.mp3;
+  document.getElementById('mh4').textContent=t.mh4;document.getElementById('mLocation').textContent=t.mLocation;
+  document.getElementById('mh5').textContent=t.mh5;document.getElementById('mp5').textContent=t.mp5;
+  if(document.getElementById('quizScreen').classList.contains('active')){renderQuestion();}
+  if(document.getElementById('resultsScreen').classList.contains('active')&&lastWinner){renderResults(lastWinner);}
+}
+
+/* ── QUIZ ── */
+function startQuiz(){showScreen('quizScreen');document.getElementById('progressWrap').classList.add('visible');renderQuestion();}
+
+function renderQuestion(){
+  var q=questions[current],t=T[lang],letters=['A','B','C','D'];
+  document.getElementById('qNumber').textContent=t.qOf.replace('{n}',current+1);
+  document.getElementById('qText').textContent=q[lang];
+  var pct=Math.round((current/questions.length)*100);
+  document.getElementById('progressFill').style.width=pct+'%';
+  document.getElementById('progressLabel').textContent=t.qOfProg.replace('{n}',current+1);
+  document.getElementById('progressPct').textContent=pct+'%';
+  var container=document.getElementById('optionsContainer');
+  container.innerHTML='';
+  for(var i=0;i<q.options.length;i++){
+    (function(idx){
+      var row=document.createElement('div');row.className='option-row';
+      var div=document.createElement('div');
+      div.className='option'+(answers[current]===idx?' selected':'');
+      div.innerHTML='<div class="option-letter">'+letters[idx]+'</div><div class="option-text">'+q.options[idx][lang]+'</div>';
+      div.onclick=function(){selectOption(idx);};
+      var eBtn=document.createElement('button');
+      eBtn.className='explain-btn';eBtn.title=lang==='en'?'What does this mean?':'¿Qué significa esto?';
+      eBtn.innerHTML='💡';eBtn.onclick=function(e){e.stopPropagation();showOptionExplain(current,idx);};
+      row.appendChild(div);row.appendChild(eBtn);container.appendChild(row);
+    })(i);
+  }
+  document.getElementById('backBtn').style.display=current>0?'inline-flex':'none';
+  document.getElementById('backTxt').textContent=T[lang].back;
+  var nb=document.getElementById('nextBtn');nb.disabled=answers[current]===undefined;
+  document.getElementById('nextTxt').textContent=current===questions.length-1?T[lang].seeResults:T[lang].next;
+}
+
+function selectOption(i){
+  answers[current]=i;
+  var rows=document.querySelectorAll('.option-row');
+  for(var x=0;x<rows.length;x++){rows[x].querySelector('.option').classList.toggle('selected',x===i);}
+  document.getElementById('nextBtn').disabled=false;
+}
+
+function goNext(){if(answers[current]===undefined)return;if(current<questions.length-1){current++;renderQuestion();window.scrollTo({top:0,behavior:'smooth'});}else{submitQuiz();}}
+function goBack(){if(current>0){current--;renderQuestion();window.scrollTo({top:0,behavior:'smooth'});}}
+
+function submitQuiz(){
+  showScreen('loadingScreen');document.getElementById('progressWrap').classList.remove('visible');
+  var totals={T:0,C:0,H:0,B:0,S:0};
+  for(var i=0;i<answers.length;i++){var sc=questions[i].options[answers[i]].scores;for(var cat in sc){totals[cat]+=sc[cat];}}
+  var winner='T',best=0;for(var key in totals){if(totals[key]>best){best=totals[key];winner=key;}}
+  lastWinner=winner;
+  setTimeout(function(){renderResults(winner);},2000);
+}
+
+/* ── RENDER RESULTS ── */
+function renderResults(winner){
+  var r=profiles[winner][lang];
+  var t=T[lang];
+  var th=themes[winner];
+  var typeLabelEN={university:'University',hbcu:'HBCU',community_college:'Comm. College',trade_school:'Trade School',online:'Online'};
+  var typeLabelES={university:'Universidad',hbcu:'HBCU',community_college:'Col. Comunitario',trade_school:'Escuela Técnica',online:'En Línea'};
+  var typeLabel=lang==='es'?typeLabelES:typeLabelEN;
+  var typeBadge={university:'badge-uni',hbcu:'badge-hbcu',community_college:'badge-cc',trade_school:'badge-trade',online:'badge-online'};
+  var igSVG='<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>';
+
+  /* hero bg with colored clouds */
+  var cloudHTML='<div class="result-hero-clouds">'
+    +'<div class="cloud" style="width:300px;height:300px;background:'+th.clouds[0]+';top:-80px;left:-60px;"></div>'
+    +'<div class="cloud" style="width:250px;height:250px;background:'+th.clouds[1]+';top:20px;right:-40px;"></div>'
+    +'<div class="cloud" style="width:200px;height:200px;background:'+th.clouds[2]+';bottom:-60px;left:30%;"></div>'
+    +'</div>';
+
+  /* career cards with archetype color */
+  var careersHTML='';
+  for(var i=0;i<r.careers.length;i++){
+    (function(idx){
+      var c=r.careers[idx];
+      careersHTML+='<div class="career-card" style="background:'+th.bg+';border-color:'+th.accent+'33;" onclick="showCareerDetail(\''+winner+'\','+idx+')">'
+        +'<div class="career-card-shine"></div>'
+        +'<span class="career-icon">'+c.icon+'</span>'
+        +'<div class="career-name">'+c.name+'</div>'
+        +'<div class="career-salary" style="color:'+th.accent+'">'+c.salary+'</div>'
+        +'<div class="career-tap-hint" style="color:'+th.accent+'">'+t.tapCareer+' ›</div>'
+        +'</div>';
+    })(i);
+  }
+
+  /* school cards */
+  var schoolKeys=profileSchools[winner];
+  var schoolsHTML='';
+  for(var j=0;j<schoolKeys.length;j++){
+    (function(skey){
+      var s=SCHOOLS[skey];
+      var bClass=typeBadge[s.type]||'badge-cc';
+      var bLabel=typeLabel[s.type]||s.type;
+      var isHBCU=s.type==='hbcu';
+      var nameDisplay=isHBCU?s.name+' <span style="color:#c080ff;font-size:11px;">'+t.hbcuNote+'</span>':s.name;
+      schoolsHTML+='<div class="school-card" onclick="showSchoolDetail(\''+skey+'\',\''+winner+'\')"><img class="school-photo" id="sphoto-'+skey+'" src="" alt="'+s.name+'" style="display:none"><div class="school-photo-placeholder" id="sph-'+skey+'" style="background:linear-gradient(90deg,'+th.accent+'66,'+th.accent+'22);"></div><div class="school-card-body"><span class="school-type-badge '+bClass+'">'+bLabel+'</span><div class="school-card-right"><div class="school-name">'+nameDisplay+'</div><div class="school-detail">'+s.loc+' &middot; '+s[lang]+'</div><div class="school-tap-hint" style="color:'+th.accent+'">'+t.tapSchool+' ›</div></div></div></div>';
+    })(schoolKeys[j]);
+  }
+
+  /* next steps with accent */
+  var stepsHTML='';
+  for(var k=0;k<r.nextSteps.length;k++){
+    stepsHTML+='<li class="step-item"><span class="step-num" style="background:'+th.accent+';color:'+(winner==='S'?'#000':'#fff')+'">'+(k+1)+'</span><span>'+r.nextSteps[k]+'</span></li>';
+  }
+
+  /* community */
+  var commHTML='';
+  for(var m=0;m<t.commCards.length;m++){var cd=t.commCards[m];commHTML+='<div class="community-card"><span class="c-icon">'+cd.icon+'</span><div class="c-title">'+cd.title+'</div><div class="c-desc">'+cd.desc+'</div></div>';}
+
+  document.getElementById('resultsContent').innerHTML=
+    '<div class="result-hero" style="background:linear-gradient(135deg,'+th.bg+' 0%,rgba(0,0,0,0.6) 100%);border:1.5px solid '+th.accent+'44;">'+
+      cloudHTML+
+      '<span class="result-character">'+th.character+'</span>'+
+      '<div class="result-archetype-badge" style="background:'+th.bg+';border:1.5px solid '+th.accent+'88;color:'+th.accent+';">'+t.resultLabel+' — '+r.archetype+'</div>'+
+      '<div class="result-title">'+r.archetype+'</div>'+
+      '<div class="result-tagline" style="color:'+th.accent+'">'+r.tagline+'</div>'+
+      '<div class="result-desc">'+r.description+'</div>'+
+    '</div>'+
+    '<div class="section-title" style="color:'+th.accent+'">'+t.secCareers+'</div><div class="careers-grid">'+careersHTML+'</div>'+
+    '<div class="section-title" style="color:'+th.accent+'">'+t.secSchools+'</div><div class="schools-list">'+schoolsHTML+'</div>'+
+    '<div class="section-title" style="color:'+th.accent+'">'+t.secSteps+'</div><div class="next-steps" style="background:'+th.bg+';border:1.5px solid '+th.accent+'33;"><ul class="step-list">'+stepsHTML+'</ul></div>'+
+    '<div class="section-title">'+t.secComm+'</div><div class="community-section"><p>'+t.commIntro+'</p><div class="community-grid">'+commHTML+'</div></div>'+
+    '<div class="cta-bar"><h3>'+t.ctaH3+'</h3><p>'+t.ctaP+'</p><div class="cta-buttons"><a class="btn-dark" href="https://www.instagram.com/y.i.l_club" target="_blank">'+igSVG+t.igBtn+'</a><button class="btn-outline-dark" onclick="openModal()">'+t.learnMore+'</button></div></div>'+
+    '<button class="restart-btn" onclick="restartQuiz()">'+t.retake+'</button>';
+
+  showScreen('resultsScreen');
+  window.scrollTo({top:0,behavior:'smooth'});
+  var skeys=profileSchools[winner];
+  for(var pi=0;pi<skeys.length;pi++){(function(sk){var imgEl=document.getElementById('sphoto-'+sk);if(imgEl)fetchSchoolPhoto(sk,imgEl);})(skeys[pi]);}
+}
+
+/* ── POPUPS ── */
+function openPopup(html){document.getElementById('popupContent').innerHTML=html;document.getElementById('popupOverlay').classList.add('open');document.body.style.overflow='hidden';}
+function closePopup(){document.getElementById('popupOverlay').classList.remove('open');document.body.style.overflow='';}
+function closePopupOutside(e){if(e.target===document.getElementById('popupOverlay'))closePopup();}
+
+function showOptionExplain(qIdx,optIdx){
+  var q=questions[qIdx],opt=q.options[optIdx],letters=['A','B','C','D'];
+  var explainKey=lang==='es'?'explainES':'explainEN';
+  openPopup('<span class="modal-emoji">💡</span><div class="modal-title">'+lang==='en'?'Option '+letters[optIdx]:'Opción '+letters[optIdx]+'</div><div class="modal-subtitle">'+(lang==='en'?'What does this mean?':'¿Qué significa esto?')+'</div><div class="modal-body"><strong style="color:var(--white);">"'+opt[lang]+'"</strong><br><br>'+opt[explainKey]+'</div>');
+}
+
+function showCareerDetail(winner,careerIdx){
+  var c=profiles[winner][lang].careers[careerIdx];
+  var th=themes[winner];
+  openPopup('<span class="modal-emoji">'+c.icon+'</span><div class="modal-title">'+c.name+'</div><div class="modal-subtitle" style="color:'+th.accent+'">'+c.salary+' &nbsp;|&nbsp; '+(lang==='en'?'What is this job?':'¿Qué es este trabajo?')+'</div><div class="modal-body">'+c.desc+'</div>');
+}
+
+function showSchoolDetail(schoolKey,winner){
+  var s=SCHOOLS[schoolKey];
+  var pKey=lang==='es'?'programsES':'programsEN';
+  var programs=s[pKey][winner]||'';
+  var noteKey=lang==='es'?'noteES':'noteEN';
+  var note=s[noteKey]||'';
+  var isHBCU=s.type==='hbcu';
+  var typeLabelEN={university:'University',hbcu:'HBCU ★',community_college:'Community College',trade_school:'Trade School',online:'Online'};
+  var typeLabelES={university:'Universidad',hbcu:'HBCU ★',community_college:'Colegio Comunitario',trade_school:'Escuela Técnica',online:'En Línea'};
+  var typeLabel=lang==='es'?typeLabelES:typeLabelEN;
+  var html='<span class="modal-emoji">'+(isHBCU?'🏛️':'🎓')+'</span><div class="modal-title">'+s.name+'</div><div class="modal-subtitle">'+typeLabel[s.type]+' &nbsp;|&nbsp; '+s.loc+'</div><div class="modal-body">'+s[lang]+'</div>';
+  if(programs){html+='<div class="modal-divider"></div><div class="modal-section-label">'+(lang==='en'?'Programs for your career path:':'Programas para tu camino profesional:')+'</div><div style="display:flex;flex-wrap:wrap;gap:6px;">'+programs.split(',').map(function(p){return'<span class="modal-tag">'+p.trim()+'</span>';}).join('')+'</div>';}
+  if(note){html+='<div class="modal-divider"></div><div style="background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.15);border-radius:12px;padding:14px 16px;font-size:13px;color:#bbb;line-height:1.7;">&#128161; '+note+'</div>';}
+  openPopup(html);
+}
+
+function openModal(){document.getElementById('modalOverlay').classList.add('open');document.body.style.overflow='hidden';}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('open');document.body.style.overflow='';}
+function closeModalOutside(e){if(e.target===document.getElementById('modalOverlay'))closeModal();}
+function restartQuiz(){current=0;answers=[];lastWinner=null;document.getElementById('progressWrap').classList.add('visible');showScreen('quizScreen');renderQuestion();window.scrollTo({top:0,behavior:'smooth'});}
+function showScreen(id){var sc=document.querySelectorAll('.screen');for(var i=0;i<sc.length;i++){sc[i].classList.remove('active');}document.getElementById(id).classList.add('active');}
+</script>
+</body>
+</html>
